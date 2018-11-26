@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>uibutton</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>CodeBlock</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>    UIButton *a =[UIButton new];
+    a.frame = CGRectMake(0, 100, 375, 100);
+    [a setTitle:@"这是一个按钮" forState:UIControlStateNormal];
+    a.backgroundColor = [UIColor blackColor];
+    
+    [self.view addSubview:a];
+    
+    
+    [a addTarget:self action:@selector(click:) forControlEvents:UIControlEventTouchUpInside];
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>12661351-3FFC-41F9-AB2E-27B08E415BDA</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Objective-C</string>
+	<key>IDECodeSnippetTitle</key>
+	<string>uibutton----按钮</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

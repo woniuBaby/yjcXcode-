@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>ppnetwork</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string> NSLog(@"筛选价格单位接口:%@\n+参数:%@\n",SelectPriceUnit,@"无");
+    [PPNetworkHelper GET:SelectPriceUnit parameters:nil success:^(id responseObject) {
+        NSString *code = responseObject[@"code"];
+        NSString *msg = responseObject[@"msg"];
+        
+        if ( [code  isEqual: @"200"]) {
+            NSArray *arr = responseObject[@"data"][@"content"];
+            for (int i=0; i&lt;arr.count; i++) {
+                
+            }
+            
+            
+        }else{
+            [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"%@\n%@",code,msg]];
+        }
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:ErrorAlert];
+    }];</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>16DFF62E-41BC-4043-B2D0-D0A873D08B7B</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Generic</string>
+	<key>IDECodeSnippetTitle</key>
+	<string>ppnetwork简写</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

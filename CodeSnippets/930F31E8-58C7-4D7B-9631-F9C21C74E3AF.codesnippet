@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>protocol</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>@protocol &lt;#Name#&gt;Delegate &lt;NSObject&gt;
+-(void)tapWithShopID:(NSString *)shopID;
+-(void)telphoto:(NSString *)photo;
+
+@end
+@property (nonatomic,weak)id &lt;&lt;#Name#&gt;Delegate&gt;delegate;</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>930F31E8-58C7-4D7B-9631-F9C21C74E3AF</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Generic</string>
+	<key>IDECodeSnippetTitle</key>
+	<string>protocol简写</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>
