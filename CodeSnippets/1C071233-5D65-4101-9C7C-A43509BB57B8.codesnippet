@@ -3,15 +3,15 @@
 <plist version="1.0">
 <dict>
 	<key>IDECodeSnippetCompletionPrefix</key>
-	<string>tq_custom_dispatch</string>
+	<string>dispatch</string>
 	<key>IDECodeSnippetCompletionScopes</key>
 	<array>
 		<string>CodeBlock</string>
 	</array>
 	<key>IDECodeSnippetContents</key>
-	<string>    dispatch_queue_t urls_queue = dispatch_queue_create("com.elctech.image_queue", NULL);
+	<string>    dispatch_queue_t queue = dispatch_queue_create("com.elctech.image_queue", NULL);
     
-    dispatch_async(urls_queue, ^{
+    dispatch_async(queue, ^{
         [self getImageUrls];
         dispatch_async(dispatch_get_main_queue(), ^{
             [self downloadImages];
@@ -26,7 +26,7 @@
 	<key>IDECodeSnippetSummary</key>
 	<string>Custom dispatch queue</string>
 	<key>IDECodeSnippetTitle</key>
-	<string>Custom dispatch queue</string>
+	<string>gcd-自定义</string>
 	<key>IDECodeSnippetUserSnippet</key>
 	<true/>
 	<key>IDECodeSnippetVersion</key>

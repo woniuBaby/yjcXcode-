@@ -3,10 +3,10 @@
 <plist version="1.0">
 <dict>
 	<key>IDECodeSnippetCompletionPrefix</key>
-	<string>tq_extension</string>
+	<string>@interface</string>
 	<key>IDECodeSnippetCompletionScopes</key>
 	<array>
-		<string>TopLevel</string>
+		<string>All</string>
 	</array>
 	<key>IDECodeSnippetContents</key>
 	<string>@interface &lt;#name#&gt;()
@@ -20,7 +20,7 @@
 	<key>IDECodeSnippetSummary</key>
 	<string>tq add interface() extension</string>
 	<key>IDECodeSnippetTitle</key>
-	<string>tq add interface() extension</string>
+	<string>添加声明</string>
 	<key>IDECodeSnippetUserSnippet</key>
 	<true/>
 	<key>IDECodeSnippetVersion</key>
