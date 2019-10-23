@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>UItextView</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>UITextView* textView = [[UITextView alloc] initWithFrame:CGRectMake(100, 410, 200, 40)];
+    textView.backgroundColor = [UIColor grayColor];
+    //文本
+    textView.text = @"看看滑动期间是不是会引起定时器的 不精准性   因为runloop的原因";
+    //字体
+    textView.font = [UIFont boldSystemFontOfSize:12.0];
+    //对齐
+    textView.textAlignment = NSTextAlignmentCenter;
+    //字体颜色
+    textView.textColor = [UIColor redColor];
+    //允许编辑
+    textView.editable = YES;
+    
+    textView.delegate = self;
+    [self.view addSubview:textView];</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>4CEE80AE-CEB2-4EB4-8FC5-212C8AAF0281</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Generic</string>
+	<key>IDECodeSnippetTitle</key>
+	<string>UItextView--简写</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

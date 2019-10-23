@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>uITextField</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string> UITextField *textField = [[UITextField alloc] initWithFrame:CGRectMake(50, 100, 200, 40)];
+    
+    textField.backgroundColor = [UIColor grayColor]; // 设置背景颜色
+    
+    textField.alpha = 1.0; // 设置透明度，范围从0.0-1.0之间
+    
+    textField.textColor = [UIColor redColor];// 设置文字的颜色
+    
+    textField.text = @"默认的文字"; // 设置默认的文字
+    
+    textField.clearsOnBeginEditing = YES; // 当第二次输入的时候，清空上一次的内容
+    
+    textField.placeholder = @"这是提示文字";// 显示提示文件，当输入文字时将自动消失
+    
+    textField.font = [UIFont boldSystemFontOfSize:25.0f]; // 设置字体的大小
+    
+    textField.textAlignment = NSTextAlignmentCenter;// 设置文字的对其方式
+    
+    [self.view addSubview:textField];</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>410EDDC1-220F-4FEB-A263-CC2D5DABC8FF</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Generic</string>
+	<key>IDECodeSnippetTitle</key>
+	<string>uITextField---简写</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

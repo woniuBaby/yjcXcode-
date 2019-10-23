@@ -3,24 +3,28 @@
 <plist version="1.0">
 <dict>
 	<key>IDECodeSnippetCompletionPrefix</key>
-	<string>protocol</string>
+	<string>UIlabel</string>
 	<key>IDECodeSnippetCompletionScopes</key>
 	<array>
 		<string>All</string>
 	</array>
 	<key>IDECodeSnippetContents</key>
-	<string>@protocol &lt;#Name#&gt;Delegate &lt;NSObject&gt;
--(void)tapWithShopID:(NSString *)shopID;
--(void)telphoto:(NSString *)photo;
-
-@end
-@property (nonatomic,weak)id &lt;&lt;#Name#&gt;Delegate&gt;delegate;</string>
+	<string> UILabel *label = [[UILabel alloc] init];
+    label.userInteractionEnabled = YES;
+    label.font = [UIFont systemFontOfSize:12];
+    label.text = @"标题";
+    label.textColor = [UIColor blackColor];
+    label.backgroundColor = [UIColor orangeColor];
+    label.layer.cornerRadius = 16;
+    label.textAlignment = NSTextAlignmentCenter;
+    [label sizeToFit];
+    [self.view addSubview:label];</string>
 	<key>IDECodeSnippetIdentifier</key>
-	<string>930F31E8-58C7-4D7B-9631-F9C21C74E3AF</string>
+	<string>2E59EF4A-066A-40B3-B740-4378D9B98F15</string>
 	<key>IDECodeSnippetLanguage</key>
 	<string>Xcode.SourceCodeLanguage.Generic</string>
 	<key>IDECodeSnippetTitle</key>
-	<string>protocol简写</string>
+	<string>UIlabel--简写</string>
 	<key>IDECodeSnippetUserSnippet</key>
 	<true/>
 	<key>IDECodeSnippetVersion</key>
