@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>masoryCode</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>[self.BGView mas_makeConstraints:^(MASConstraintMaker *make) {
+    make.center.equalTo(self.view);
+    
+    make.left.equalTo(self.view).offset(KScaleWidth(170));
+    make.right.equalTo(self.view).offset(-KScaleWidth(170));
+    make.top.equalTo(self.view).offset(KScaleWidth(60));
+    make.bottom.equalTo(self.view).offset(-KScaleWidth(60));
+    
+    make.width.mas_equalTo(KScaleWidth(500));
+    make.height.mas_equalTo(KScaleWidth(220));
+    }];</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>B546C704-7932-4AF6-B303-FDE7920642DE</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Generic</string>
+	<key>IDECodeSnippetSummary</key>
+	<string>masoryCode</string>
+	<key>IDECodeSnippetTitle</key>
+	<string>masoryCode - 适配代码</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

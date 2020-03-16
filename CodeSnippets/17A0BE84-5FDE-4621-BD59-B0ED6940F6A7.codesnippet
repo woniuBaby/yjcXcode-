@@ -3,17 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>IDECodeSnippetCompletionPrefix</key>
-	<string>tablemeth</string>
+	<string>table</string>
 	<key>IDECodeSnippetCompletionScopes</key>
 	<array>
 		<string>All</string>
 	</array>
 	<key>IDECodeSnippetContents</key>
-	<string>
-&lt;UITableViewDelegate,UITableViewDataSource&gt;
+	<string>&lt;UITableViewDelegate,UITableViewDataSource&gt;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic,strong)NSMutableArray *dataArray;
-@property (assign, nonatomic) NSInteger pageNo;
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     return 1;
 }
@@ -35,15 +34,41 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
+}
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    
+    return 44;
+    
+}
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    UIView *view = [UIView new];
+    view.backgroundColor = YWhiteColor;
+    view.frame = CGRectMake(15, 0, SCREEN_WIDTH, 44);
+    UILabel *lab = [UILabel new];
+    lab.frame = view.frame;
+    [view addSubview:lab];
+    
+    lab.textAlignment = NSTextAlignmentLeft;
+    lab.textColor = YBlackColor;
+    lab.font = [UIFont boldSystemFontOfSize:15];
+    if (self.isHaveData == YES) {
+        lab.text = @"附近餐厅";
+    } else {
+        lab.text = [NSString stringWithFormat:@"自建地址: \"%@\"",self.searchBar.text];;
+        lab.userInteractionEnabled = YES;
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
+        [lab addGestureRecognizer:tap];
+    }
+    return view;
 }</string>
 	<key>IDECodeSnippetIdentifier</key>
-	<string>98EAB00F-2F84-4349-B27A-CDA84A2F4EE3</string>
+	<string>17A0BE84-5FDE-4621-BD59-B0ED6940F6A7</string>
 	<key>IDECodeSnippetLanguage</key>
 	<string>Xcode.SourceCodeLanguage.Generic</string>
 	<key>IDECodeSnippetSummary</key>
-	<string>table</string>
+	<string>tableMethod</string>
 	<key>IDECodeSnippetTitle</key>
-	<string>table代理--没有SectionView--XIB</string>
+	<string>table----有section的-XIB</string>
 	<key>IDECodeSnippetUserSnippet</key>
 	<true/>
 	<key>IDECodeSnippetVersion</key>

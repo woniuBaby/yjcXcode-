@@ -3,17 +3,38 @@
 <plist version="1.0">
 <dict>
 	<key>IDECodeSnippetCompletionPrefix</key>
-	<string>tablemeth</string>
+	<string>table</string>
 	<key>IDECodeSnippetCompletionScopes</key>
 	<array>
 		<string>All</string>
 	</array>
 	<key>IDECodeSnippetContents</key>
-	<string>
-&lt;UITableViewDelegate,UITableViewDataSource&gt;
-@property (weak, nonatomic) IBOutlet UITableView *tableView;
+	<string>&lt;UITableViewDelegate,UITableViewDataSource&gt;
+@property (strong, nonatomic) UITableView *tableView;
 @property (nonatomic,strong)NSMutableArray *dataArray;
-@property (assign, nonatomic) NSInteger pageNo;
+
+- (UITableView *)tableView
+{
+    if (!_tableView) {
+        _tableView = [[UITableView alloc] initWithFrame:self.view.bounds
+        style:UITableViewStylePlain];
+        _tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        _tableView.delegate = self;
+        _tableView.dataSource = self;
+        _tableView.backgroundColor = [UIColor clearColor];
+        _tableView.backgroundView = nil;
+        _tableView.bounces = YES;
+        _tableView.showsVerticalScrollIndicator = NO;
+        _tableView.separatorInset = UIEdgeInsetsZero;
+        _tableView.layoutMargins = UIEdgeInsetsZero;
+        _tableView.separatorStyle = UITableViewCellSelectionStyleNone;
+        _tableView.rowHeight = 44.0f;
+        [_tableView setTableFooterView:[[UIView alloc]initWithFrame:CGRectZero]];
+    }
+    return _tableView;
+}
+
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     return 1;
 }
@@ -37,13 +58,13 @@
     
 }</string>
 	<key>IDECodeSnippetIdentifier</key>
-	<string>98EAB00F-2F84-4349-B27A-CDA84A2F4EE3</string>
+	<string>44239154-FC4C-4C5F-8C96-EADB4F95D03D</string>
 	<key>IDECodeSnippetLanguage</key>
 	<string>Xcode.SourceCodeLanguage.Generic</string>
 	<key>IDECodeSnippetSummary</key>
-	<string>table</string>
+	<string>tableCreat</string>
 	<key>IDECodeSnippetTitle</key>
-	<string>table代理--没有SectionView--XIB</string>
+	<string>table----纯代码创建</string>
 	<key>IDECodeSnippetUserSnippet</key>
 	<true/>
 	<key>IDECodeSnippetVersion</key>

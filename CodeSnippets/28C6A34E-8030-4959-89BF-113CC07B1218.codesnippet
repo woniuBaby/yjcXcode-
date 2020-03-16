@@ -3,19 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>IDECodeSnippetCompletionPrefix</key>
-	<string>ppp</string>
+	<string>uiview</string>
 	<key>IDECodeSnippetCompletionScopes</key>
 	<array>
 		<string>All</string>
 	</array>
 	<key>IDECodeSnippetContents</key>
-	<string>#pragma mark - &lt;#Label#&gt;</string>
+	<string>UIView *bgView = [[UIView alloc] init];
+bgView.backgroundColor = [UIColor whiteColor];
+[self.view addSubview:bgView];</string>
 	<key>IDECodeSnippetIdentifier</key>
-	<string>4153CD73-5499-4668-B452-128583FC6848</string>
+	<string>28C6A34E-8030-4959-89BF-113CC07B1218</string>
 	<key>IDECodeSnippetLanguage</key>
-	<string>Xcode.SourceCodeLanguage.Objective-C</string>
+	<string>Xcode.SourceCodeLanguage.Generic</string>
+	<key>IDECodeSnippetSummary</key>
+	<string>UIView</string>
 	<key>IDECodeSnippetTitle</key>
-	<string>ELC Pragma mark</string>
+	<string>UIView--简单创建</string>
 	<key>IDECodeSnippetUserSnippet</key>
 	<true/>
 	<key>IDECodeSnippetVersion</key>

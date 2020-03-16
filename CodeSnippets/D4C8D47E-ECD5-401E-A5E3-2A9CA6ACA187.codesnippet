@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>uibutton</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>UIButton *newnButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    newnButton.tag = 1;
+    [newnButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [newnButton setTitle: @"立即加入" forState:UIControlStateNormal];
+    [newnButton addTarget:self action:@selector(onPhoneLogin) forControlEvents:UIControlEventTouchUpInside];
+    newnButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [newnButton setBackgroundColor:MAIN_GROUNDCOLOR];
+    [newnButton roundCornorWithRadius:GL_BORDOR_RADIUS borderColor:GL_BORDOR_COLOR borderWidth:0.0];
+    [self.View addSubview:newnButton];</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>D4C8D47E-ECD5-401E-A5E3-2A9CA6ACA187</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Generic</string>
+	<key>IDECodeSnippetSummary</key>
+	<string>uibutton</string>
+	<key>IDECodeSnippetTitle</key>
+	<string>uibutton----字</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

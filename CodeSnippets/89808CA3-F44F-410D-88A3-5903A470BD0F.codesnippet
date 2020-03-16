@@ -3,21 +3,24 @@
 <plist version="1.0">
 <dict>
 	<key>IDECodeSnippetCompletionPrefix</key>
-	<string>aaa</string>
+	<string>uistoryboard</string>
 	<key>IDECodeSnippetCompletionScopes</key>
 	<array>
 		<string>All</string>
 	</array>
 	<key>IDECodeSnippetContents</key>
-	<string></string>
+	<string>UIStoryboard *SB = [UIStoryboard storyboardWithName:@"YJC_all" bundle:NSBundle.mainBundle];
+        YJCSelectCityViewController *VC = [SB instantiateViewControllerWithIdentifier:@"YJCSelectCityViewController"];
+        
+        [self.navigationController pushViewController:VC animated:YES];</string>
 	<key>IDECodeSnippetIdentifier</key>
-	<string>7707FE2A-C6CF-4774-8A7D-EA6BEE058C11</string>
+	<string>89808CA3-F44F-410D-88A3-5903A470BD0F</string>
 	<key>IDECodeSnippetLanguage</key>
-	<string>Xcode.SourceCodeLanguage.Objective-C</string>
+	<string>Xcode.SourceCodeLanguage.Generic</string>
 	<key>IDECodeSnippetSummary</key>
-	<string>tq property declaration - assign</string>
+	<string>uistoryboard</string>
 	<key>IDECodeSnippetTitle</key>
-	<string>tq property declaration - assign</string>
+	<string>UIStoryBoard----跳进storyBoard页面</string>
 	<key>IDECodeSnippetUserSnippet</key>
 	<true/>
 	<key>IDECodeSnippetVersion</key>

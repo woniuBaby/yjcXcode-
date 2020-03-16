@@ -9,25 +9,20 @@
 		<string>CodeBlock</string>
 	</array>
 	<key>IDECodeSnippetContents</key>
-	<string>UIButton *buttton =[UIButton buttonWithType:UIButtonTypeCustom];
-buttton.frame = CGRectMake(10  , 100  , 160, 40);
-[buttton setTitle:@"按钮" forState:UIControlStateNormal];
-[buttton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-buttton.backgroundColor = [UIColor whiteColor];
-buttton.layer.borderWidth = 0.5;
-buttton.layer.cornerRadius = 5;
-[self.view addSubview:buttton];
-
-[buttton addTarget:self action:@selector(click:) forControlEvents:UIControlEventTouchUpInside];
--(void)click:(UIButton *)btn{
+	<string>    UIButton *a =[UIButton new];
+    a.frame = CGRectMake(0, 100, 375, 100);
+    [a setTitle:@"这是一个按钮" forState:UIControlStateNormal];
+    a.backgroundColor = [UIColor blackColor];
     
-}</string>
+    [self.view addSubview:a];
+    
+    
+    [a addTarget:self action:@selector(click:) forControlEvents:UIControlEventTouchUpInside];
+</string>
 	<key>IDECodeSnippetIdentifier</key>
 	<string>12661351-3FFC-41F9-AB2E-27B08E415BDA</string>
 	<key>IDECodeSnippetLanguage</key>
 	<string>Xcode.SourceCodeLanguage.Objective-C</string>
-	<key>IDECodeSnippetSummary</key>
-	<string></string>
 	<key>IDECodeSnippetTitle</key>
 	<string>uibutton----按钮</string>
 	<key>IDECodeSnippetUserSnippet</key>

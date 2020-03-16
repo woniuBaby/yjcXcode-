@@ -3,24 +3,29 @@
 <plist version="1.0">
 <dict>
 	<key>IDECodeSnippetCompletionPrefix</key>
-	<string>protocol</string>
+	<string>masoryCodebg</string>
 	<key>IDECodeSnippetCompletionScopes</key>
 	<array>
 		<string>All</string>
 	</array>
 	<key>IDECodeSnippetContents</key>
-	<string>@protocol &lt;#Name#&gt;Delegate &lt;NSObject&gt;
--(void)tapWithShopID:(NSString *)shopID;
--(void)telphoto:(NSString *)photo;
-
-@end
-@property (nonatomic,weak)id &lt;&lt;#Name#&gt;Delegate&gt;delegate;</string>
+	<string>[self.BGView mas_makeConstraints:^(MASConstraintMaker *make) {
+    make.centerY.equalTo(self.BGView);
+    
+    make.left.equalTo(self.BGView).offset(KScaleWidth(170));
+    make.right.equalTo(self.BGView).offset(-KScaleWidth(170));
+    make.top.equalTo(self.BGView).offset(KScaleWidth(60));
+    make.bottom.equalTo(self.BGView).offset(-KScaleWidth(60));
+    
+    make.width.mas_equalTo(KScaleWidth(500));
+    make.height.mas_equalTo(KScaleWidth(220));
+    }];</string>
 	<key>IDECodeSnippetIdentifier</key>
-	<string>930F31E8-58C7-4D7B-9631-F9C21C74E3AF</string>
+	<string>D22F251E-A8C5-4F7A-A940-E7B9754B3A9B</string>
 	<key>IDECodeSnippetLanguage</key>
 	<string>Xcode.SourceCodeLanguage.Generic</string>
 	<key>IDECodeSnippetTitle</key>
-	<string>protocol简写</string>
+	<string>masoryCode-BGview</string>
 	<key>IDECodeSnippetUserSnippet</key>
 	<true/>
 	<key>IDECodeSnippetVersion</key>

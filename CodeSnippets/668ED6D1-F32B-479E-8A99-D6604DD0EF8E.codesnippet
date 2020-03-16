@@ -3,19 +3,26 @@
 <plist version="1.0">
 <dict>
 	<key>IDECodeSnippetCompletionPrefix</key>
-	<string>ppp</string>
+	<string>UILabel</string>
 	<key>IDECodeSnippetCompletionScopes</key>
 	<array>
 		<string>All</string>
 	</array>
 	<key>IDECodeSnippetContents</key>
-	<string>#pragma mark - &lt;#Label#&gt;</string>
+	<string>UILabel *titleLabel = [UILabel new];
+titleLabel.font = kFont(16);
+titleLabel.text = @"其他登录方式";
+titleLabel.textAlignment = NSTextAlignmentCenter;
+titleLabel.textColor = [UIColor blackColor];
+[self.view addSubview:titleLabel];</string>
 	<key>IDECodeSnippetIdentifier</key>
-	<string>4153CD73-5499-4668-B452-128583FC6848</string>
+	<string>668ED6D1-F32B-479E-8A99-D6604DD0EF8E</string>
 	<key>IDECodeSnippetLanguage</key>
-	<string>Xcode.SourceCodeLanguage.Objective-C</string>
+	<string>Xcode.SourceCodeLanguage.Generic</string>
+	<key>IDECodeSnippetSummary</key>
+	<string>UILabel</string>
 	<key>IDECodeSnippetTitle</key>
-	<string>ELC Pragma mark</string>
+	<string>UILabel--简单label</string>
 	<key>IDECodeSnippetUserSnippet</key>
 	<true/>
 	<key>IDECodeSnippetVersion</key>

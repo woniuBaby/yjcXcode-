@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>self.loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.loginButton.tag = 1;
+    [self.loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.loginButton setTitle: @"立即加入" forState:UIControlStateNormal];
+    [self.loginButton addTarget:self action:@selector(onPhoneLogin) forControlEvents:UIControlEventTouchUpInside];
+    self.loginButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [self.loginButton setBackgroundColor:MAIN_GROUNDCOLOR];
+    [self.loginButton roundCornorWithRadius:GL_BORDOR_RADIUS borderColor:GL_BORDOR_COLOR borderWidth:0.0];
+    [self.loginView addSubview:self.loginButton];</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>653B31D0-8237-4CC9-9A35-C13EBF83E38B</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Generic</string>
+	<key>IDECodeSnippetTitle</key>
+	<string>My Code Snippet</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

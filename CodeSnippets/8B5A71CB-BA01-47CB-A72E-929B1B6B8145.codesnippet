@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>uilabel---</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>UILabel *titleLabel = [UILabel new];
+titleLabel.userInteractionEnabled = YES;
+titleLabel.font = [UIFont systemFontOfSize:12];
+titleLabel.text = @"";
+titleLabel.layer.borderWidth = 0.5;
+titleLabel.layer.cornerRadius = 5;
+titleLabel.textAlignment = NSTextAlignmentCenter;
+titleLabel.textColor = [UIColor redColor];
+titleLabel.layer.borderColor = [UIColor redColor].CGColor;
+titleLabel.tag = 1;
+[self.view addSubview:titleLabel];</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>8B5A71CB-BA01-47CB-A72E-929B1B6B8145</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Generic</string>
+	<key>IDECodeSnippetSummary</key>
+	<string>uilabel---</string>
+	<key>IDECodeSnippetTitle</key>
+	<string>uilabel---创建</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

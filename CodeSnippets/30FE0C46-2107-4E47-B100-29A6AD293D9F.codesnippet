@@ -3,21 +3,24 @@
 <plist version="1.0">
 <dict>
 	<key>IDECodeSnippetCompletionPrefix</key>
-	<string>aaa</string>
+	<string>uibutton</string>
 	<key>IDECodeSnippetCompletionScopes</key>
 	<array>
 		<string>All</string>
 	</array>
 	<key>IDECodeSnippetContents</key>
-	<string></string>
+	<string>self.selectButton =[UIButton buttonWithType:UIButtonTypeCustom];
+    [self.selectButton setImage:[UIImage imageNamed:@"未选中"] forState:UIControlStateNormal];
+    [self.agreementView addSubview:self.selectButton];
+    [self.selectButton addTarget:self action:@selector(selectAction:) forControlEvents:UIControlEventTouchUpInside];</string>
 	<key>IDECodeSnippetIdentifier</key>
-	<string>7707FE2A-C6CF-4774-8A7D-EA6BEE058C11</string>
+	<string>30FE0C46-2107-4E47-B100-29A6AD293D9F</string>
 	<key>IDECodeSnippetLanguage</key>
-	<string>Xcode.SourceCodeLanguage.Objective-C</string>
+	<string>Xcode.SourceCodeLanguage.Generic</string>
 	<key>IDECodeSnippetSummary</key>
-	<string>tq property declaration - assign</string>
+	<string>uibutton</string>
 	<key>IDECodeSnippetTitle</key>
-	<string>tq property declaration - assign</string>
+	<string>uibutton----图</string>
 	<key>IDECodeSnippetUserSnippet</key>
 	<true/>
 	<key>IDECodeSnippetVersion</key>

@@ -3,19 +3,26 @@
 <plist version="1.0">
 <dict>
 	<key>IDECodeSnippetCompletionPrefix</key>
-	<string>ppp</string>
+	<string>uiimageview</string>
 	<key>IDECodeSnippetCompletionScopes</key>
 	<array>
 		<string>All</string>
 	</array>
 	<key>IDECodeSnippetContents</key>
-	<string>#pragma mark - &lt;#Label#&gt;</string>
+	<string>UIImageView *personImage = [UIImageView new];
+personImage.image = [UIImage imageNamed:@"user"];
+personImage.backgroundColor = [UIColor whiteColor];
+personImage.layer.masksToBounds =YES;
+personImage.layer.cornerRadius = 25;
+[self.BGView addSubview:personImage];</string>
 	<key>IDECodeSnippetIdentifier</key>
-	<string>4153CD73-5499-4668-B452-128583FC6848</string>
+	<string>166C40AA-C5E4-4499-B010-B2E55D7C37AF</string>
 	<key>IDECodeSnippetLanguage</key>
-	<string>Xcode.SourceCodeLanguage.Objective-C</string>
+	<string>Xcode.SourceCodeLanguage.Generic</string>
+	<key>IDECodeSnippetSummary</key>
+	<string>UIImageView</string>
 	<key>IDECodeSnippetTitle</key>
-	<string>ELC Pragma mark</string>
+	<string>UIImageView--简写</string>
 	<key>IDECodeSnippetUserSnippet</key>
 	<true/>
 	<key>IDECodeSnippetVersion</key>
