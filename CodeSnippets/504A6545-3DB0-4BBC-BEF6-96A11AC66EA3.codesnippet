@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>uialert</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string> UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"提示"
+                                                                      message:@"暂未开放,敬请期待"
+                                                               preferredStyle:UIAlertControllerStyleAlert];
+       
+       UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault
+                                                             handler:^(UIAlertAction * action) {
+                                                                 //响应事件
+                                                                 NSLog(@"action = %@", action);
+                                                             }];
+       UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault
+                                                             handler:^(UIAlertAction * action) {
+                                                                 //响应事件
+                                                                 NSLog(@"action = %@", action);
+                                                             }];
+
+       [alert addAction:defaultAction];
+       [alert addAction:cancelAction];
+       [self presentViewController:alert animated:YES completion:nil];</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>504A6545-3DB0-4BBC-BEF6-96A11AC66EA3</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Objective-C</string>
+	<key>IDECodeSnippetSummary</key>
+	<string>uialert</string>
+	<key>IDECodeSnippetTitle</key>
+	<string>uialert-双按钮</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

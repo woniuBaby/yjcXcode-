@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>for</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>for (int i=0; i&lt;10; i++) {
+    UIButton *buttton =[UIButton buttonWithType:UIButtonTypeCustom];
+    buttton.frame = CGRectMake(10  , 100 + 50 *i , 160, 40);
+    [buttton setTitle:@"按钮" forState:UIControlStateNormal];
+    [buttton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    buttton.backgroundColor = [UIColor whiteColor];
+    buttton.layer.borderWidth = 0.5;
+    buttton.layer.cornerRadius = 5;
+    buttton.tag = i;
+    [self.view addSubview:buttton];
+    
+    
+    [buttton addTarget:self action:@selector(click:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+-(void)click:(UIButton *)btn{
+    
+    
+}</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>8993B84A-A1BA-4FD4-A6BA-14E0B3DA98AD</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Generic</string>
+	<key>IDECodeSnippetSummary</key>
+	<string>for循环 创建按钮</string>
+	<key>IDECodeSnippetTitle</key>
+	<string>for循环 创建按钮</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>
