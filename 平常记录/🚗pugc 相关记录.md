@@ -1,3 +1,73 @@
+
+
+
+
+2023年05月17日15:56:51
+
+\#define SDKAppId_zego @"905500515"
+
+\#define SDKAppKey_zego @"983c0a174bee25c8eb3093c4d717fe4506e62c740b3382439b40a0e0b868de1f"
+
+这个是咪咕视频那边可用
+
+---
+
+
+
+2023年05月12日
+
+遗留: rtmp推流 同一个地址 未报错   需要抓包获取cdn 查看
+
+
+
+
+
+
+
+----
+
+
+
+2023年05月11日
+
+## 美颜问题: 内存过高
+
+2、【iOS-demo V2.0.3.2】多台设备下，开启美颜后的预览场景下，【二台】和【视频】互相切换后，主播的预览画面变形
+http://jira.cmvideo.cn/browse/MGLIVE-673
+
+4、【iOS-demo V2.0.3.2】iPhone X，二台开播一段时间后，结束直播返回到预览页面时，主播预览画面变形
+http://jira.cmvideo.cn/browse/MGLIVE-675
+
+8、【iOS-demo V2.0.3.2】iPhone 13 Pro，横屏开播后，进行镜像切换操作后，主播画面卡死，无画面
+http://jira.cmvideo.cn/browse/MGLIVE-679
+
+6、【iOS-demo V2.0.3.2】iPhone X，进行二台开播时，demo页面提示“推流成功”，主播画面为白屏，但拉流端已经显示主播的画面了
+http://jira.cmvideo.cn/browse/MGLIVE-677
+
+9、【iOS-demo V2.0.3.2】iPhone 13 Pro，横屏开播，多次进行切后台操作后，当切回直播画面时，无法恢复直播，主播画面也是无画面
+http://jira.cmvideo.cn/browse/MGLIVE-68
+
+7、【iOS-demo V2.0.3.2】iPhone 12，预览或者开播情况下，切换镜像时，屏幕会先黑一下
+http://jira.cmvideo.cn/browse/MGLIVE-678
+
+
+
+## 待复现
+
+3、【iOS-demo V2.0.3.2】两台设备，同一个rtmp的推流地址，同时推流，一台推流成功，另一台设备没有弹出流地址重复的错误码
+http://jira.cmvideo.cn/browse/MGLIVE-674
+
+5、【iOS-demo V2.0.3.2】iPhone X，二台开播一段时间后，未开启美颜和滤镜，会不停的弹出7003的错误码
+http://jira.cmvideo.cn/browse/MGLIVE-676
+
+
+
+
+
+
+
+
+
 合并beta分支 操作记录
 
 ```
