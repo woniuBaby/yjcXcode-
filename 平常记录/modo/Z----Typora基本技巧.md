@@ -1,3 +1,24 @@
+
+
+1. 防止未激活退出(貌似没什么作用)
+
+```
+1.然后打开typora包内容找到
+/Applications/Typora.app/Contents/Resources/TypeMark/ 
+2.编辑器打开上面文件夹，这里我拉到vscode
+hasActivated="true"==e.hasActivated   修改--> 将它改为  hasActivated="true"=="true"
+3.重启
+```
+
+<img src="/Users/lin/Library/Application Support/typora-user-images/image-20251125182148684.png" alt="image-20251125182148684" style="zoom:50%;" />
+
+
+
+2. https://github.com/eglhub/typora-activation?tab=readme-ov-file
+   这个链接下载固定版本--->里面有个OS版本  可以直接用
+
+
+
 ## Typora基本技巧
 
 ### 常用快捷键
