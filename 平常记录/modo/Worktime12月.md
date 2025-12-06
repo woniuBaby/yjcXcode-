@@ -15,3 +15,17 @@
 > 新任务:[市场需求对接](https://modoglobal.feishu.cn/wiki/KtFqwWthWiCPzRkQ0Ksc7TcJncf?sheet=c28d1e&rangeId=c28d1e_n6hEJEhaFM&rangeVer=1) @张济汶（中台发行部-部门经理）  新增花园IOS手游接入腾讯广告SDK的需求，麻烦安排对接下哈
 
 1. 调试页面 统一UI,新增 接口插接调整
+
+四,
+
+
+
+五,
+
+1. 易盾SDK 添加初始化,
+2. 调试页面 日志全部ddlog化(游戏日志未写入文本)
+
+六
+
+1. 测试包 打包蒲公英链接
+

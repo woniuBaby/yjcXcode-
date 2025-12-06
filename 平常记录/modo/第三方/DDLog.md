@@ -11,6 +11,14 @@ DDLogFlagWarning, 0, nil, __PRETTY_FUNCTION__, frmt, ##__VA_ARGS__)
 #define DDLogVerbose(frmt, ...) LOG_MAYBE(LOG_ASYNC_ENABLED, LOG_LEVEL_DEF, DDLogFlagVerbose, 0, nil, __PRETTY_FUNCTION__, frmt, ##__VA_ARGS__)
 ```
 
+```objc
+//关闭xcode系统日志: 这样系统日志基本全部屏蔽。
+✔ 设置 Scheme
+OS_ACTIVITY_MODE = disable
+✔ 再加一条（更强）
+DISABLE_OS_LOG = 1
+```
+
 
 
 
@@ -55,16 +63,20 @@ MODO  相关
     #endif
     #define LOG_LEVEL_DEF [DDDynamicLogLevel ddLogLevel]
 
-    #define MDDebugLog(fmt, ...) DDLogError((@"[iOS_NativeLog]: [%@] [%s] [Line %d] " fmt),[[NSString stringWithUTF8String:__FILE__] lastPathComponent], __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-    #define MDDebugLogWS(fmt, ...) DDLogInfo((@"[iOS_NativeLog]: [%@] [%s] [Line %d] " fmt),[[NSString stringWithUTF8String:__FILE__] lastPathComponent], __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-    #define MDRNDebugLog(fmt, ...) DDLogError((@"[javascript]" fmt), ##__VA_ARGS__)
+       //信息 普通打印
+    #define MDDebugLog(fmt, ...) DDLogInfo((@"[iOS_NativeLog]: [%@] [%s] [Line %d]---📄📄📄 " fmt),[[NSString stringWithUTF8String:__FILE__] lastPathComponent], __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+    #define MDDebugLogWS(fmt, ...) DDLogInfo((@"[iOS_NativeLog]: [%@] [%s] [Line %d]---🌐🌐🌐 " fmt),[[NSString stringWithUTF8String:__FILE__] lastPathComponent], __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+    #define MDDebugLogCOCOS(fmt, ...) DDLogInfo((@"[iOS_NativeLog]: [%@] [%s] [Line %d]---🎮🎮🎮 " fmt),[[NSString stringWithUTF8String:__FILE__] lastPathComponent], __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+    #define MDDebugLogJS(fmt, ...) DDLogInfo((@"[iOS_NativeLog]: [%@] [%s] [Line %d]---☕️☕️☕️ " fmt),[[NSString stringWithUTF8String:__FILE__] lastPathComponent], __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+
+    //debug
+    #define MDDebugLogDebug(fmt, ...) DDLogDebug((@"[iOS_NativeLog]: [%@] [%s] [Line %d]--🔧🔧🔧" fmt),[[NSString stringWithUTF8String:__FILE__] lastPathComponent], __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
     //警告
     #define MDDebugLogWarn(fmt, ...) DDLogWarn((@"[iOS_NativeLog]: [%@] [%s] [Line %d] --⚠️⚠️ ⚠️" fmt),[[NSString stringWithUTF8String:__FILE__] lastPathComponent], __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
     //报错
     #define MDDebugLogError(fmt, ...) DDLogError((@"[iOS_NativeLog]: [%@] [%s] [Line %d] --❌❌❌ " fmt),[[NSString stringWithUTF8String:__FILE__] lastPathComponent], __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-
-    #define MDNTLog(fmt, ...) NSLog((@"NT_CL：%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
-//    #define NSLog(...)
+    //冗长重复
+    #define MDDebugLogVerbose(fmt, ...) DDLogVerbose((@"[iOS_NativeLog]: [%@] [%s] [Line %d] --🐢🐢🐢 " fmt),[[NSString stringWithUTF8String:__FILE__] lastPathComponent], __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
 #else
 
