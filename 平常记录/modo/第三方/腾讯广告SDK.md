@@ -26,6 +26,13 @@ DataNexus|腾讯广告
 账户ID: 42278582
 
 
+	<key>TencentGDTActionID</key>
+	<string>1218291294</string>
+	<key>TencentGDTSecretKey</key>
+	<string>909bb1e7f80bac180025c07a7e407507</string>
+
+
+
 ```
 
 `通用callback`
@@ -235,3 +242,19 @@ interface IOpt_gdt_data_purchase {
 
 ```
 
+有个先后顺序需要您这边决定下:
+
+1. iOS APP 启动 --> 腾讯GDT 初始化--->RN启动-->上报各种行为
+
+   -初始化:本地写死  (数据源ID和密钥)
+   -有3种 START_APP 行为可以上报 (主动激活/被第三方URL Scheme唤起/被第三方Links唤起)-->这个腾讯官方文档内容   
+
+   -缺点:无法服务端配置  -->  数据源ID和密钥
+
+2. iOS APP 启动 --> RN启动-->腾讯GDT 初始化--->上报各种行为
+
+   -初始化:服务端传入  (数据源ID和密钥)
+
+​	   -腾讯GDT初始化后紧接着调用 START_APP 行为,与安卓同步
+
+​	   -缺点:START_APP 行为 不确定

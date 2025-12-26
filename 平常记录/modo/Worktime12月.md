@@ -238,3 +238,78 @@ sdkOpenId: 175952628234062810937154
 
 2. GDT 统计数据
 3. 收集crash,并将信息存储,待下次进行可将crash 上传(可以添加可控开关)
+
+15:53:45 [INFO]: Node::setParent setParent setParent setParent
+
+星期五
+
+1. 将crash信息 与 crash前日志挂钩结合,当产生一个crash会有一个crash符号表日志(主要记录warring/error 其中error 由于之前项目未整理,很多报错依旧是普通ddlog打印,未分级),,就将对应的工程日志
+
+2. 
+
+   
+
+---
+
+> 2025年12月22日 ~ 2025年12月28日 
+
+星期一.
+
+1. 与服务端对接  腾讯GDT SDK  
+2. 1.1.4 版本打包
+3. Fastlane + Jenkins 内容了解
+
+星期二
+
+1. 腾讯gdt 1.1.4 (2) 打包测试
+1. 妖怪来了 打包
+1. 妖怪来了 无法运行 问题查询 (需要2次pod install
+1. 可以将扫码的 debugview  集成到 debugview中 (需要修改 MDUserDefaultsSET(@"0", COCOSDEBUGMODE);)
+
+星期三
+
+1. 苹果证书30天后到期 ⚠️⚠️⚠️⚠️⚠️⚠️
+
+2. iOS 手机号验证码登录(第一次成功,第二次参数失败)
+   参数错误 查询 Url:https://moac.babigame.cn/account/login/phone/v3]
+   参数:countryCode  字符串还是number
+   
+   ```
+   {"clid":1,"lang":"zh","deviceId":"4BEFFDE6-9E48-493B-99C7-9797FEEE92BD","appId":"95cdabc1e87532edb21c99f4ed845653","packageName":"cn.lbwdhysj.gf.ios","platform":"iOS","version":"v1.1.4","name":"18876435280","countryCode":86,"code":"999396","type":1,"showVerEighteenAgeTips":false,"storeCountryCode":"CN","sysLanguage":"zh-Hans-CN"}]
+   ```
+   
+   
+
+```
+2025-12-24 17:09:52:876 HuaYuann[32211:1484457] ☕️☕️☕️ [🙏🙏🙏🙏🙏 moRequest End params:----
+{"clid":1,"lang":"zh","deviceId":"4BEFFDE6-9E48-493B-99C7-9797FEEE92BD","appId":"95cdabc1e87532edb21c99f4ed845653","packageName":"cn.lbwdhysj.gf.ios","platform":"iOS","version":"v1.1.4","name":"13623468861","countryCode":86,"code":"302714","type":1,"showVerEighteenAgeTips":false,"storeCountryCode":"CN","sysLanguage":"zh-Hans-CN"}]
+2025-12-24 17:09:52:876 HuaYuann[32211:1484457] ☕️☕️☕️ [🙏🙏🙏🙏🙏 moRequest End result:----
+{"status":2,"msg":"validation.string","success":false}]
+```
+
+````
+2025-12-24 17:14:23:898 HuaYuann[32340:1490604] ☕️☕️☕️ [🙏🙏🙏🙏🙏 moRequest End params:----
+{"clid":1,"lang":"zh","deviceId":"4BEFFDE6-9E48-493B-99C7-9797FEEE92BD","appId":"95cdabc1e87532edb21c99f4ed845653","packageName":"cn.lbwdhysj.gf.ios","platform":"iOS","version":"v1.1.4","name":"13623468861","countryCode":"86","code":"099950","type":1,"showVerEighteenAgeTips":false,"storeCountryCode":"CN","sysLanguage":"zh-Hans-CN"}]
+2025-12-24 17:14:23:899 HuaYuann[32340:1490604] ☕️☕️☕️ [🙏🙏🙏🙏🙏 moRequest End result:----
+{"status":0,"msg":"SUCCESS","success":true,"data":..}
+````
+
+3. 海外花园 卡登录时间久问题查询 (静默登录影响)
+3. 灵动岛 占位符 [%s] 验证,图片资源验证
+3. 客户端一键打包前期准备 https://modoglobal.feishu.cn/wiki/QidPwjNkgiqVMfkZFw3cMd6mnfg
+
+星期四
+
+1. 1.1.4 (4)上传
+
+```
+【我的花园世界】【国内】 1.1.4（4）tf已上传
+1、新增腾讯广告gdt
+市场需求对接(19条)
+@梁智敏（中台测试部-部门经理）@张江平（中台测试部-测试工程师）
+这周要上架,辛苦安排下
+
+```
+
+2. 妖怪来了  打测试包  地图缩放
+3. 灵动岛  最终方案确定(UI/流程)
