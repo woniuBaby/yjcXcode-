@@ -9,6 +9,11 @@
                                    .foregroundColor(.white.opacity(0.8))
                                    .multilineTextAlignment(.center)
                                    .frame(width: 40)
+   
+   自适应宽度
+   .font(.caption2.monospacedDigit())
+   .frame(minWidth: 30, maxWidth: 60) // 关键：设置一个宽度范围
+   .multilineTextAlignment(.center)
    ```
 
    
@@ -45,7 +50,8 @@
 3. 铺满
 
    ```swift
-   frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center) // ✅ 居中铺满
+   frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center) //居中铺满
+   frame(maxWidth: .infinity, maxHeight: .infinity)
    ```
 
    

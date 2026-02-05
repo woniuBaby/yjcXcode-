@@ -313,3 +313,64 @@ sdkOpenId: 175952628234062810937154
 
 2. 妖怪来了  打测试包  地图缩放
 3. 灵动岛  最终方案确定(UI/流程)
+
+星期五
+
+1. 灵动岛 添加网络图片
+2. (共享group)
+
+```
+https://i.postimg.cc/FKjHjfTT/2824e26ca56bd9ac64fe71bd60d00267.png
+
+```
+
+星期六
+
+1. 1.1.4(5) 打包上传
+
+---
+
+
+
+> 2025年12月29日 ~2025年12月31日
+
+星期一
+
+灵动岛
+
+- **OC 层：完整解析服务端 JSON → 结构化 Model**
+- **传给 Live Activity 的 ContentState：只放“已扁平化、已计算好的展示数据”**
+
+星期二
+
+1. 灵动岛
+
+```
+按钮:3dfc97   其他: 00d59d
+```
+
+星期三
+
+灵动岛
+
+```
+
+    
+    
+    实时活动
+plugin：live_activity
+adapter：default
+api：query，request，update，end
+
+权限
+plugin：permission
+adapter：default
+api：check，request，openPermissionSettings
+check，request参数：ios.permisson.live_activity
+```
+
+```
+ContentState(ID: "flower_06", name: "玫瑰花06", mainColor: "", countdownTime: 11.0, flowerImage: "", tipStart: "倒计时", tipEnd: "已成熟！", titleStart: "茁壮成长！", titleEnd: "已可收货", subtitleStart: "距离成熟: ", subtitleEnd: "快去收货您的鲜花吧!", startImage: "/private/var/mobile/Containers/Shared/AppGroup/1D936B27-414E-44D3-A6A6-B1EC9D86024B/live_activity/fe1b222b699e16f6cb2c7db99b55d1e3.png", endImage: "/private/var/mobile/Containers/Shared/AppGroup/1D936B27-414E-44D3-A6A6-B1EC9D86024B/live_activity/8ad738be4877e032612c0c7652f50d97.png", tipColorIng: "#00BFFF", tipColorFin: "#00BFFF", titleColorIng: "", titleColorFin: "", subtitleColorIng: "", subtitleColorFin: "", btnbgColorIng: "#ffffff", btnbgColorFin: "#ffffff", btnColorIng: "#00BFFF", btnColorFin: "#00BFFF")---
+```
+
+ **static** **let** defaultTipColorFinHex = "#62ffbe"//tip完成色值 亮绿
