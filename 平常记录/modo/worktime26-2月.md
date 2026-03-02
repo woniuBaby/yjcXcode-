@@ -1,141 +1,23 @@
 2026年02月02日~
 
-星期一: 
+星期一: 多域名替换
 
 ```
 /Users/lin/Documents/HuaYuann/native/engine/ios/domainList.json
 ```
 
-星期二
+星期二:
+RN资源 podfile 处理 不打包走main,打包走ENV
 
-```
-require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
-
-platform :ios, '12.0'
-source 'https://github.com/CocoaPods/Specs.git'
-
-workspace "HuaYuann.xcworkspace"
-
-install! 'cocoapods', :deterministic_uuids => false
-
-# NativeBility 版本/本地切换：export NATIVE_BILITY_PATH=/path/to/NativeBility.xcodeproj 使用本地
-NATIVE_BILITY_PROJECT = ENV['NATIVE_BILITY_PATH'] || File.expand_path('../../../../modo-native-ability-ios/NativeBility/NativeBility.xcodeproj', __dir__)
-
-# RN 静态 + 个别第三方动态，全局先设静态
-use_frameworks! :linkage => :static
-
-# ********************************* 公用能力库（只声明一次，App 与 NativeBility 共用）*********************************
-def shared_pods
-  pod 'MJExtension', '3.4.1'
-  pod 'AFNetworking', '4.0.1'
-  pod 'SSZipArchive'
-  pod 'libpag', '4.3.33'
-  pod 'Masonry', '~> 1.0.2'
-  pod 'FMDB', '2.7.5'
-  pod 'SVProgressHUD', :git => "https://github.com/SVProgressHUD/SVProgressHUD.git"
-  pod 'CocoaLumberjack', '3.8.0'
-  pod 'ZXingObjC', '~> 3.6.4'
-  pod 'ActivitySDK', :git => "ssh://git@192.168.13.252:8022/modo_ios/activitysdk.git"
-  pod 'MDRNSource', :git => 'ssh://git@192.168.13.252:8022/modo_ios/mdrnsource.git', :branch => (ENV['RN_POD_BRANCH'] || 'main')
-  pod 'AnyThinkiOS', '6.4.92'
-  pod 'AnyThinkBaiduSDKAdapter', '6.4.92.2'
-  pod 'AnyThinkKuaiShouSDKAdapter', '6.4.92.2'
-  pod 'AnyThinkSigmobSDKAdapter', '6.4.92.2'
-  pod 'AnyThinkTTSDKAdapter', '6.4.92.1'
-  pod 'AnyThinkGDTSDKAdapter', '6.4.92.2'
-  pod 'WechatOpenSDK', '2.0.5'
-  pod 'TencentOpenAPIMD', :git => 'ssh://git@192.168.13.252:8022/cjx/TencentOpenAPIMD.git'
-  pod 'GravityEngineSDK'
-  pod 'ATAuthSDKMD', :git => 'ssh://git@192.168.13.252:8022/cjx/atauthsdkmd.git'
-  pod 'TapTapShareSDK', '~> 4.6.3'
-  pod 'XiaoHongShuOpenSDK', '~> 1.2.18'
-  pod 'Weibo_SDK', :git => "https://github.com/sinaweibosdk/weibo_ios_sdk.git"
-  pod 'BDASignalSDK'
-  pod 'RiskPerceptionModo', :git => "ssh://git@192.168.13.252:8022/modo_ios_public/riskperceptionmodo.git"
-  pod 'TencentGDTActionSDKMoDo', :git => "ssh://git@192.168.13.252:8022/modo_ios_public/TencentGDTActionSDKMoDo.git"
-end
-
-def app_only_pods
-  pod 'TXLiteAVSDK_TRTC', '11.4.14571'
-end
-
-abstract_target 'SharedPods' do
-  shared_pods
-
-  target 'HuaYuann' do
-    config = use_native_modules!
-    use_react_native!(:path => config["reactNativePath"], :hermes_enabled => true)
-    app_only_pods
-  end
-
-  target 'NativeBility' do
-    project NATIVE_BILITY_PROJECT
-    config = use_native_modules!
-    use_react_native!(:path => config["reactNativePath"], :hermes_enabled => true)
-  end
-end
-
-# 强制必须为 dynamic 的 pod（如 ActivitySDK）
-pre_install do |installer|
-  installer.pod_targets.each do |pod|
-    if pod.name == 'ActivitySDK'
-      puts "👉 [pre_install] 强制将 #{pod.name} 设置为动态 framework"
-      def pod.build_type
-        Pod::BuildType.dynamic_framework
-      end
-    end
-  end
-end
-
-# 灵动岛相关
-target 'HuaYuanLAExtension' do
-  pod  'ActivityUI',:git => "ssh://git@192.168.13.252:8022/modo_ios/activityui.git"
-#  pod  'ActivityUI', :path => '/Users/lin/Desktop/gameProject/LiveActivity/ActivityUI' #本地
-end
-
-# Disable signing for pods
-post_install do |installer|
-  installer.generated_projects.each do |project|
-    project.targets.each do |target|
-      puts "Target Name: #{target.name}"
-        target.build_configurations.each do |config|
-          config.build_settings['CODE_SIGN_IDENTITY'] = ''
-         end
-    end
-  end
-  
-  installer.pods_project.targets.each do |t|
-    t.build_configurations.each do |config|
-      if config.name == 'Release'
-        config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
-        config.build_settings['GCC_GENERATE_DEBUGGING_SYMBOLS'] = 'YES'
-      end
-    end
-  end
-  
-#  installer.pods_project.targets.each do |target|
-#    puts "Target Name: #{target.name}"
-#    if target.name == 'Pod-NativeBility'
-#      target.build_configurations.each do |config|
-#        # 添加header search path
-#        config.build_settings['HEADER_SEARCH_PATHS'] ||= ['${PODS_ROOT}/../NativeBilityDemo/egret-libs/include']
-#        # 添加library search path
-#        config.build_settings['LIBRARY_SEARCH_PATHS'] ||= ['${PODS_ROOT}/../NativeBilityDemo/egret-libs']
-#      end
-#    end
-#  end
-  
-end
+pod 'MDRNSource', :git => 'ssh://git@192.168.13.252:8022/modo_ios/mdrnsource.git', :branch => (ENV['RN_POD_BRANCH'] || 'main')
 
 
 
 
-```
 
-
-
-星期三
+星期三:
+脚本代码优化
+封装!
 
 ```
 Fastfile 可优化点清单（更结构化 / 方法封装）
@@ -218,3 +100,237 @@ app_store：从 ENV 或共用 load_build_config 读 workspace/scheme/bundleid/pr
 
 ```
 
+4. jenkins 参数化 UI视图化,多项git文件处理更换资源
+   1.RN资源 main.jsbundle
+   2.能力SDK: 本地项目 编译出的framwork 放到指定仓库(build 要将debug-->release) 打包需要用的是 release包,指定版本号(默认选择本地开发最新包)
+   3.项目工程 最初一直在master 上开发,不合适,添加release 版本包
+
+5. 打包错误日志 全局抓取,不局限打包期间(远程拉取代码/打包前before/打包完成后工程删除临时分支等)
+
+   输出日志完善完整
+
+
+
+
+
+----
+
+2026年02月09日~2026年02月13日
+星期一
+
+1.问题查询
+
+```
+工单类型: 普通工单
+是否高V:否
+平台:混服
+游戏:我的花园世界
+账号:ys013b1sya4o
+角色ID:3080256100296
+区服:s296
+角色名:s296.可口可乐
+问题类型:游戏闪退
+问题标题:游戏闪退
+问题描述:玩家反馈一直游戏闪退，试过重装游戏，麻烦帮忙看一下
+SDK openid:175665169085268240910513
+设备类型:ios
+
+对应设备id : 22AFB3CC-EE02-4166-A47B-2E9E435010A2
+```
+
+2.更换引擎固定资源
+
+星期三
+
+1.灵动岛相关bug
+
+2. 闪退
+
+星期四
+```
+14号 重庆 一天的火车(650 * 2) 晚上吃个饭/住房  + 200 +200  -->1700
+15 中下午-->成都 150* 2 票,吃200,住300,晚饭200 -->1000
+16 都江堰/青城山/熊猫-->300+  吃/500 住300   -->1100 (春节吃好+300)
+17 18 19 黄龙/九寨沟/四姑娘 3天 --> 3000
+20/21 峨眉山/乐山  -->800 * 2 -->1600
+
+22  匀一天到(1000)  阿坝州  
+23 必须走 -->车票预估2000
+
+```
+
+1.1.7版本
+
+```
+  #调试
+  pod 'DoraemonKit/Core', '~> 3.0.7', :configurations => ['Debug'] #必选
+  pod 'DoraemonKit/WithLogger', '~> 3.0.7', :configurations => ['Debug'] #可选
+  
+  
+  #ifdef CC_DEBUG
+#import <DoraemonKit/DoraemonManager.h>
+#endif
+
+    #ifdef CC_DEBUG
+   [[DoraemonManager shareInstance] installWithPid:@"productId"];//productId为在“平台端操作指南”中申请的产品id
+   #endif
+```
+
+星期五
+```
+📊 设备性能 - CPU: 6核, 内存: 42.6MB, maxLogLength: 8KB
+📊 设备性能 - CPU: 6核, 内存: 56.7MB, maxLogLength: 8KB
+📊 设备性能 - CPU: 6核, 内存: 96.8MB, maxLogLength: 8KB
+
+可用内存 > 500MB 几乎不卡
+200MB ~ 500MB  FPS波动,资源加载慢
+100MB ~ 200MB  危险区  动画掉帧 页面卡顿
+< 100MB  极危险区  系统开始压缩内存 随时可被系统杀死
+```
+
+```
+    float availableMemory =
+    (vmStats.free_count +
+     vmStats.inactive_count +
+     vmStats.purgeable_count) * vm_page_size / 1024.0 / 1024.0;
+    return availableMemory;
+可用缓存 计算  
+```
+
+
+
+----
+
+2026年02月23日
+
+```
+游戏名称: 我的花园世界 - 花园-正式-混服-公测 [160]
+角色显示ID: ys0904wfeut8
+角色ID:25400657101436
+角色名称: s1436.困困困
+角色区服: 1436
+角色VIP等级: 未知
+渠道: 官方渠道
+客服系统ID: 1613850922154221810
+设备id: 30B50F31-3BFD-436B-8C73-BAFFD0CE8BE0
+设备名: iPhone13ProMax
+该玩家也是点击开始游戏就闪退麻烦看看@杜嘉威（运营二部-运营专员） @傅建生（玲珑坊-项目经理）
+```
+
+
+
+2026年02月24日 星期二
+
+1. 打印进度
+
+   ```
+   2026-02-24 17:23:02.874 HuaYuann[730:63465] updateFirstProgress -------- 更新进度 40
+   2026-02-24 17:23:02:874 HuaYuann[730:63465] [iOS_NativeLog]: [CocosMainView.m] [-[CocosMainView registerEmitter]_block_invoke_3] [Line 1231]updateProgress -------- 40.000000
+   2026-02-24 17:23:02.874 HuaYuann[730:63465] updateFirstProgress -------- 更新进度 66
+   2026-02-24 17:23:02:874 HuaYuann[730:63465] [iOS_NativeLog]: [CocosMainView.m] [-[CocosMainView registerEmitter]_block_invoke_3] [Line 1232]updateProgress11 -------- 首次加载时间稍长，请耐心等待...
+   
+   
+   2026-02-24 17:23:03:196 HuaYuann[730:63465] [iOS_NativeLog]: [CustomProgressView.m] [-[CustomProgressView updateProgressViewUI]] [Line 200]进度条进度 ------------- updateProgressViewUI : 19
+   2026-02-24 17:23:03:229 HuaYuann[730:63465] [iOS_NativeLog]: [CustomProgressView.m] [-[CustomProgressView updateProgressViewUI]] [Line 200]进度条进度 ------------- updateProgressViewUI : 20
+   2026-02-24 17:23:03:262 HuaYuann[730:63465] [iOS_NativeLog]: [CustomProgressView.m] [-[CustomProgressView updateProgressViewUI]] [Line 200]进度条进度 ------------- updateProgressViewUI : 21
+   
+   2026-02-24 17:23:03:588 HuaYuann[730:63465] [iOS_NativeLog]: [Channel_cocos.m] [-[Channel_cocos onSendDataDict:extInfo:]] [Line 180]到这---------{"type":"response","data":{"status":1},"uk":"run|1771924983517|0.5055168284100667|96"}
+   2026-02-24 17:23:03:588 HuaYuann[730:63465] [iOS_NativeLog]: [Channel_cocos.m] [-[Channel_cocos onSendDataDict:extInfo:]] [Line 180]到这---------{"type":"response","data":{"status":1},"uk":"run|1771924983517|0.23078510979403888|97"}
+   2026-02-24 17:23:03:588 HuaYuann[730:63465] [iOS_NativeLog]: [Channel_cocos.m] [-[Channel_cocos onSendDataDict:extInfo:]] [Line 180]到这---------{"type":"response","data":{"status":1},"uk":"run|1771924983520|0.1739630289789681|98"}
+   ```
+
+   频繁
+
+```
+2026-02-24 17:31:02:032 HuaYuann[730:63465] [iOS_NativeLog]: [MDLogModeService.m] [-[MDLogModeService ping]] [Line 754]ping----------------------ping
+
+2026-02-24 17:31:03:000 HuaYuann[730:64420] [iOS_NativeLog]: [MDLogModeService.m] [-[MDLogModeService webSocket:didReceivePong:]] [Line 798]收到ping回调-------------------------------
+
+2026-02-24 17:31:32:062 HuaYuann[730:63465] [iOS_NativeLog]: [MDLogModeService.m] [-[MDLogModeService ping]] [Line 754]ping----------------------ping
+2026-02-24 17:31:32:096 HuaYuann[730:63511] [iOS_NativeLog]: [MDLogModeService.m] [-[MDLogModeService webSocket:didReceivePong:]] [Line 798]收到ping回调-------------------------------
+```
+
+星期三  2026年02月25
+```
+可用内存（Available Memory）
+Free memory（完全空闲）
+Inactive memory（可回收）
+Purgeable memory（可丢弃缓存）
+
+>500MB   安全
+200-500  轻微卡
+100-200  明显卡
+<100MB   高概率被杀
+```
+
+闪退记录
+
+```
+第一个:
+游戏名称: 我的花园世界 - 花园-正式-混服-公测 [160]
+角色显示ID: ys0904wfeut8
+角色ID:25400657101436
+角色名称: s1436.困困困
+角色区服: 1436
+角色VIP等级: 未知
+渠道: 官方渠道
+客服系统ID: 1613850922154221810
+设备id: 30B50F31-3BFD-436B-8C73-BAFFD0CE8BE0
+设备名: iPhone13ProMax
+该玩家也是点击开始游戏就闪退麻烦看看
+
+有日志 可查看
+
+
+```
+
+星期四
+
+1.[Channel_cocos onSendDataDict] crash 修正,添加判空
+
+2.添加性能 UI  以及打印
+
+3.优化日志输出,超长日志折叠/广告等级变低
+
+星期五  
+计划:
+1.crash 搜集到服务端
+2.crash 总结
+3.卡进度相关内容
+4.RN
+5.打包 (一键打包  涉及  更新分支)
+
+实际:
+
+1.查询ipad用户 点击开始crash
+
+```
+设备id 455C8D86-3A0B-44D3-A6FD-FC51CFC20B9B
+
+设备id: 30B50F31-3BFD-436B-8C73-BAFFD0CE8BE0 昨天加的上面
+
+iphone 12 :  AEC5E7B4-701D-423C-A8E8-FC6A77E59E1D
+```
+
+星期六
+```
+需要处理:
+1.更换头像
+2.性能日志打印逻辑(是否是开启白名单)
+//开启 白名单/debug模式 才去打印性能调试
+    //性能日志属于: 频繁打印
+    //白名单:日志等级默认 all 会打印
+    //debug模式: 日志等级默认 debug 不打印
+    if (self.debugMode == YES) {
+        [MDPerformanceCollector startLoggingEvery:2.0];  // 每 2 秒打一次
+    }
+    
+  
+3.星期四添加的 30B50F31-3BFD-436B-8C73-BAFFD0CE8BE0闪退
+						 30B50F31-3BFD-436B-8C73-BAFFD0CE8BE0
+```
+
+
+---
+
+![image-20260302100952645](/Users/lin/Library/Application Support/typora-user-images/image-20260302100952645.png)
