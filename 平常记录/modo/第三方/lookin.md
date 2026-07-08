@@ -31,14 +31,14 @@ appdelegate
 ```objc
 pod 'LookinServer', :configurations => ['Debug']
 
-#if DEBUG
+#if CC_DEBUG
 #import <LookinServer/LookinServer.h> // 可能需要此头文件
 #endif
 
 
 // 在调试模式下检查 LookinServer 是否可用
 - (void)checkLookinServerAvailability {
-#if DEBUG
+#if CC_DEBUG
     Class lookinClass = NSClassFromString(@"LookinServer");
     if (lookinClass) {
         NSLog(@"✅ LookinServer 已集成");
@@ -52,5 +52,7 @@ pod 'LookinServer', :configurations => ['Debug']
     }
 #endif
 }
+
+delegate :   [self  checkLookinServerAvailability];
 ```
 
