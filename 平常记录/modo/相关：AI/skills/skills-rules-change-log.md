@@ -2,6 +2,29 @@
 
 用于记录 AI 工作流相关配置的变更，包括 `AGENTS.md`、`.codex/skills/`、`.cursor/skills/`、OpenSpec 配置、项目级规则和通用使用约定。
 
+## 2026-07-13
+
+### HuaYuann：明确桌面 AI 日志为本机个人工作流
+
+标签：`#HuaYuann` `#codex` `#cursor` `#rules` `#agents-md` `#workflow`
+
+变更对象：
+
+- `/Users/lin/Documents/HuaYuann/AGENTS.md`
+- `/Users/lin/Documents/HuaYuann/.cursor/rules/ability-doc-sync.mdc`
+- `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/skills/skills.md`
+- `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+
+变更内容：
+
+- 保留“能力 / SDK 改动必须同步检查文档”的项目规则。
+- 明确桌面 AI 日志目录是当前用户本机的个人工作流目录，仅在目录存在且可写时同步。
+- 同事机器没有该目录或不在当前用户本机环境时，可以跳过桌面同步，不阻塞代码、文档或验证任务。
+
+验证情况：
+
+- 已更新 Codex 项目规则、Cursor 规则、桌面索引与长期计划接力规则。
+
 ## 2026-07-07
 
 ### HuaYuann：iOS 低版本 / 小组件闪退问题沉淀
@@ -153,3 +176,254 @@
 - 影响范围：后续 NativeBility Plugin / PluginAdapter 开发、错误码调整、SDK 接入行为变更、能力文档维护。
 - 验证情况：已通过 `git diff --check` 检查规则文件格式；未运行业务构建，因为本次仅修改 AI 工作流规则。
 - 标签：#codex #cursor #skills #rules #agents-md #workflow
+
+## 2026-07-10 - HuaYuann 能力文档同步规则固化
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Documents/HuaYuann/AGENTS.md`
+  - `/Users/lin/Documents/HuaYuann/.cursor/rules/ability-doc-sync.mdc`
+- 变更原因：能力 SDK、插件 API、传输协议、mock 数据、WidgetCommon / WidgetUI、控制组件等对外能力行为变更后，容易漏同步文档，需要 Codex 与 Cursor 两侧都强制记住“能力改动必须检查并更新文档”。
+- 规则内容：
+  - 修改、新增或删除能力相关代码时，必须同步检查能力仓库 `docs/`、README、接入说明、测试用例、排查文档和接口定义。
+  - 必须清理旧字段、旧类型、旧 API 名称、旧调用示例和旧返回结构。
+  - 若确认无需文档更新，最终回复必须明确说明“已检查文档，无需更新”及原因。
+  - 验证时使用 `rg` 扫描旧协议/旧字段残留。
+- 路径修正：AI 工作流规则日志目录以 `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI` 为准；同步修正 `AGENTS.md` 中旧路径。
+- 影响范围：后续 NativeBility 能力 SDK、Widget / Control 组件、插件 API、传输协议、mock 数据和接入文档维护。
+- 验证情况：已读取并检查 `AGENTS.md` 与 `.cursor/rules/ability-doc-sync.mdc`；已用 `rg` 确认新增规则关键字可检索。未运行业务构建，因为本次仅修改 AI 工作流规则与日志。
+- 标签：#codex #cursor #skills #rules #agents-md #workflow
+
+## 2026-07-10 - 能力 SDK 插件标准化长期计划
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+- 变更原因：能力 SDK 插件标准化 / 流程化是一项长期工程，需要一份可接力文档记录目标、步骤、进度、下一步和恢复标准，避免当前账号、会话或额度中断后丢失上下文。
+- 文档内容：
+  - 定义插件“可删除后高度还原”的最低信息标准。
+  - 定义新增插件、删除插件的标准流程。
+  - 将工作拆成局部试点、插件清单化、全局能力检测三个阶段。
+  - 记录当前公会竞赛小组件改造进度和下一步 Widget 插件能力卡片任务。
+- 影响范围：后续 NativeBility 能力 SDK 插件新增、修改、删除、文档补齐、mock 检查和全局一致性检测。
+- 验证情况：已通过 `sed` / `rg` 检查长期计划文档关键章节与日志索引可读取；未运行业务构建，因为本次仅新增 AI 接力文档和日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility
+
+## 2026-07-10 - 能力 SDK 复杂度分级与分支矩阵
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/小组件/05-基础概念与APP连调.md`
+- 变更原因：不同能力的分支复杂度差异很大，灵动岛、小组件等少分支能力可以轻量记录，但登录等多分支能力可能包含十多个业务分支，必须显式要求分支矩阵，避免文档只覆盖主流程。
+- 文档内容：
+  - 长期计划新增 L1 / L2 / L3 能力复杂度分级。
+  - 能力卡片模板新增“复杂度与分支矩阵”。
+  - 小组件联调文档补充说明：小组件是少分支样例，登录类多分支能力应按分支拆入参、回调、错误码、mock 和验证。
+- 影响范围：后续 NativeBility 能力 SDK 插件新增、删除、恢复、文档补齐和全局能力检测。
+- 验证情况：已通过 `sed` / `rg` 检查新增章节和关键字可读取；未运行业务构建，因为本次仅修改文档与日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility #docs
+
+## 2026-07-10 - 能力 SDK 插件文档主线校正
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/README.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/common-plugin-architecture.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/小组件/05-基础概念与APP连调.md`
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+- 变更原因：插件标准化、复杂度分级、分支矩阵的主线应落在 `docs/nt+ability/Plugin`，不是 `docs/小组件` 或 `docs/控制组件` 专项接入文档。
+- 变更内容：撤回小组件文档中的通用复杂度提示，将 L1 / L2 / L3 和多分支矩阵要求补到插件 README 与公共架构文档；桌面长期计划同步当前断点和下一步。
+- 验证情况：已通过 `rg` 检查关键字与路径归位；未运行业务构建，因为本次仅修改文档与日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility #docs
+
+## 2026-07-10 - Widget 低分支插件文档补齐起步
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/README.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Widget/widget-prd.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Widget/widget-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Widget/widget-test-cases.md`
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+- 变更原因：确认插件文档目录应与代码目录 `NativeBility/NativeBility/nt+ability/Plugin/<PluginName>` 一一对应，并从低分支插件开始补齐文档。
+- 变更内容：补充代码/文档目录映射规则；将 `Widget` 文档从旧 demo 平铺字段口径更新到当前 API、WidgetCommon、query、公会竞赛、mock、测试与恢复要点口径。
+- 验证情况：已通过 `rg` 检查 `Widget` 文档中关键 API、`competition`、`WidgetCommon`、目录映射和桌面断点可检索；未运行业务构建，因为本次仅修改文档与日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility #docs #widget
+
+## 2026-07-10 - 专项文档归档到对应插件 references
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Widget/references/小组件/`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Control/references/控制组件/`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Activity/references/live-activity/`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/小组件/README.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/控制组件/README.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/integrations/live-activity/README.md`
+- 变更原因：`docs/控制组件`、`docs/小组件`、`docs/integrations/live-activity` 散落在插件文档体系外，不符合“文档目录对应代码插件目录”的主线结构。
+- 变更内容：将三处历史专项资料迁移到对应插件 `references/` 下，作为参考、日志和学习过程保留；旧目录保留 README 跳转入口；插件 README 增加 references 归档规则和 `Control` 入口。
+- 断点说明：当前 `Widget` 标准文档可恢复主链路，但未达到完全等价重建，需要继续补字段细表、存储细节、错误码全集和 mock 完整 JSON。
+- 验证情况：已通过 `find` / `rg` 检查迁移后文件位置、旧目录跳转 README、插件 README 和桌面断点可检索；未运行业务构建，因为本次仅调整文档结构与日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility #docs #widget #control #activity
+
+## 2026-07-10 - 能力 SDK 文档长期自动推进协议
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/README.md`
+- 变更原因：用户要求长期规划进程，不要每做一步都询问；需要把后续推进方式固化为默认批处理流程。
+- 变更内容：新增“自动推进协议”，明确无需逐步询问的事项、必须暂停确认的事项、批次粒度、推荐批次顺序和每批执行模板；插件 README 增加长期计划入口与默认批处理说明。
+- 影响范围：后续 NativeBility 能力 SDK 插件文档补齐、references 归档、恢复等级评估和断点同步。
+- 验证情况：已通过 `rg` 检查“自动推进协议”“批次粒度”“必须暂停确认”等关键字可检索；未运行业务构建，因为本次仅修改文档与日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility #docs
+
+## 2026-07-10 - Control 低分支插件标准文档首版
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Control/control-prd.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Control/control-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Control/control-test-cases.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/README.md`
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+- 变更原因：按长期自动推进协议，从低分支插件开始补齐标准三件套；`Control` 插件已有代码目录和 references，但缺少标准 PRD、实现、测试文档。
+- 变更内容：补齐 `control/default/getInfo`、`delegate`、App Group `ControlWidget` 协议、iOS 18 启用条件、`ControlWidgetCoreHostWire.h` 编译期依赖、恢复步骤和测试用例。
+- 验证情况：已通过 `rg` 检查 `control-prd`、`getInfo`、`delegate`、`ControlWidget`、`iOS 18`、`ControlWidgetCoreHostWire`、长期计划进度和插件 README 索引可检索；未运行业务构建，因为本次仅修改文档与日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility #docs #control
+
+## 2026-07-10 - 已有文档代码一致性检查规则
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/README.md`
+- 变更原因：已有插件文档可能已经基本可用，后续完善时应先检查是否与当前代码一致，避免浪费时间重写已有沉淀。
+- 变更内容：自动推进协议增加“已有文档先做代码一致性检查”；若文档与代码相符，只补缺口和恢复信息，不重写整份文档。
+- 验证情况：已通过 `rg` 检查“代码一致性检查”“不重写整份文档”等关键字可检索；未运行业务构建，因为本次仅修改文档与日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility #docs
+
+## 2026-07-10 - 插件清单与第一批 L1 一致性检查
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/plugin-inventory.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/README.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Activity/activity-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Network/network-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Event/event-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/BiReport/bi-report-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Permission/permission-implementation.md`
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+- 变更原因：用户要求先扫全量插件，区分单分支、多分支，并持续推进单分支批次。
+- 变更内容：新增插件清单与 L1/L2/L3 分类；对第一批 `Activity`、`Network`、`Event`、`BiReport`、`Permission` 做已有文档与当前代码一致性检查，只补结论、恢复等级和缺口，不重写整份文档。
+- 验证情况：已通过 `find` / `rg` 检查 `plugin-inventory.md`、第一批插件一致性小节、长期计划进度和 README 索引可检索；未运行业务构建，因为本次仅修改文档与日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility #docs #inventory
+
+## 2026-07-10 - 第二批 L1 插件一致性检查
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/plugin-inventory.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Log/log-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/UMP/ump-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/TRTC/trtc-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/VoiceTranslation/voice-translation-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/RealtimeVoiceTrans/realtime-voice-trans-implementation.md`
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+- 变更原因：继续按长期自动推进协议处理低分支插件，先检查已有文档是否与当前代码一致，节省重写成本。
+- 变更内容：对 `Log`、`UMP`、`TRTC`、`VoiceTranslation`、`RealtimeVoiceTrans` 补代码一致性检查、恢复等级、模块名核对和后续缺口；长期计划推进到下一批 L1 插件。
+- 验证情况：已通过 `rg` 检查第二批插件一致性小节、插件清单、长期计划进度可检索；未运行业务构建，因为本次仅修改文档与日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility #docs #inventory
+
+## 2026-07-10 - 第三批 L1 插件一致性检查
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/plugin-inventory.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/RiskPerception/risk-perception-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/MusicEngine/music-engine-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Map/map-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Media/media-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Player/player-implementation.md`
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+- 变更原因：继续按长期自动推进协议处理低分支插件，批量完成已有文档与当前代码的一致性检查。
+- 变更内容：对 `RiskPerception`、`MusicEngine`、`Map`、`Media`、`Player` 补代码一致性检查、恢复等级、模块名核对和后续缺口；长期计划推进到剩余 L1 插件。
+- 验证情况：已通过 `rg` 检查第三批插件一致性小节、插件清单、长期计划进度可检索；未运行业务构建，因为本次仅修改文档与日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility #docs #inventory
+
+## 2026-07-10 - 第四批 L1 与异常目录一致性检查
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/plugin-inventory.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/FileFuc/file-fuc-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/FaceRecognition/face-recognition-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Max/max-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/file/file-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/AccountVerification/account-verification-implementation.md`
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+- 变更原因：用户要求按插件数量显示进度百分比，并继续完成剩余低分支插件。
+- 变更内容：对 `FileFuc`、`FaceRecognition`、`Max`、历史 `file`、`AccountVerification` 补代码一致性检查、恢复等级和结构风险；修正 `Max` adapter 版本为 `1.0.6`；在插件清单和长期计划中写入 66.7%（22 / 33）整体进度。
+- 验证情况：已通过 `rg` 检查第四批插件一致性小节、整体进度、长期计划进度可检索；未运行业务构建，因为本次仅修改文档与日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility #docs #inventory #progress
+
+## 2026-07-10 - 第五批 L2 主文档一致性检查
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/plugin-inventory.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/README.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Push/push-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Storage/storage-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Pay/pay-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Reward_video/reward-video-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/DeepLink/deep-link-implementation.md`
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+- 变更原因：进入 L2 中分支插件，先对已有主文档做代码一致性检查，并按用户要求持续更新插件数量进度。
+- 变更内容：对 `Push`、`Storage`、`Pay`、`Reward_video`、`DeepLink` 补主文档一致性检查、恢复等级和分支缺口；修正 `Pay/iosPay` 版本为 `1.0.5`、`Reward_video/topon` 版本为 `1.0.2`；整体进度更新为 81.8%（27 / 33），剩余 6 个插件。
+- 验证情况：已通过 `rg` 检查第五批插件一致性小节、整体进度、长期计划进度可检索；未运行业务构建，因为本次仅修改文档与日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility #docs #inventory #progress
+
+## 2026-07-10 - 第六批 L2 主文档一致性检查
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/plugin-inventory.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/README.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Basic/basic-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/entry/entry-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/game/game-implementation.md`
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+- 变更原因：收尾 L2 中分支插件，并继续按插件数量更新整体进度。
+- 变更内容：对 `Basic`、`entry`、`game` 补主文档一致性检查、恢复等级和后续缺口；修正 `Basic/default` 版本为 `1.0.19`；整体进度更新为 90.9%（30 / 33），剩余 3 个 L3 插件。
+- 验证情况：已通过 `rg` 检查第六批插件一致性小节、整体进度、长期计划进度可检索；未运行业务构建，因为本次仅修改文档与日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility #docs #inventory #progress
+
+## 2026-07-10 - 第七批 L3 主文档一致性检查
+
+- 项目：HuaYuann / modo-native-ability-ios 关联接入
+- 变更对象：
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/plugin-inventory.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/README.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Login/login-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Share/share-implementation.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Report/report-implementation.md`
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md`
+- 变更原因：收尾 L3 多分支插件的主文档级代码一致性检查，并完成按插件数量统计的进度闭环。
+- 变更内容：对 `Login`、`Share`、`Report` 补主文档一致性检查、恢复等级和 provider 深查缺口；`Report` 主矩阵补入 `appsflyer`；`Login` 清单同步 `taptap`；整体进度更新为 100%（33 / 33），剩余插件 0 个。
+- 验证情况：已通过 `rg` 检查第七批插件一致性小节、整体进度、长期计划进度可检索；未运行业务构建，因为本次仅修改文档与日志。
+- 标签：#codex #cursor #skills #rules #workflow #sdk #nativebility #docs #inventory #progress
+
+## 2026-07-14 - NativeBility 仓库内置能力文档同步规则
+
+- 项目：modo-native-ability-ios / NativeBility
+- 变更对象：
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/AGENTS.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/.cursor/rules/ability-doc-sync.mdc`
+  - `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/skills/skills-rules-change-log.md`
+- 变更原因：原“能力 SDK 改代码必须同步文档”的规则只放在 HuaYuann 主工程；用户确认主规则应内置到 NativeBility 能力 SDK 仓库，避免从能力仓库直接工作时规则失效。
+- 变更内容：新增 NativeBility `AGENTS.md`，写入能力文档同步、插件文档改造、个人桌面日志和验证要求；新增 Cursor rule `ability-doc-sync.mdc`，覆盖 NativeBility 插件代码、docs、WidgetCommon / WidgetUI 能力接入；明确桌面日志是个人机器路径，目录不存在时同事可跳过。
+- 验证情况：已通过 `rg` 检查 NativeBility 规则可检索；已执行 `git diff --check` 检查规则与日志无空白错误；未运行业务构建，因为本次仅修改 AI 工作流规则和文档。
+- 标签：#codex #cursor #skills #rules #agents-md #nativebility #docs #workflow

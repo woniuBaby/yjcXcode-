@@ -12,3 +12,10 @@ jxxkcldq@dfirstmail.com
 
 ```
 
+```
+使用CC Switch更换Codex自定义模型
+api地址：https://api.aiwork123.com/llm/lingzhi/v1
+apikey：7f881d9d-4232-4666-baab-4d2386432376
+@所有人 这个cusor、codex额度还不够的大家可以用这个。这个是整个部门通用（不要外发给其他部门，按照部门算额度的），如果发现额度用完了再跟我反馈。
+```
+
