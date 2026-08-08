@@ -1,4 +1,7 @@
+modo yjc cjx 111111
+
 1. brew install jenkins
+   
    ```ruby
    Note: When using launchctl the port will be 8080.
    To start jenkins now and restart at login:
@@ -27,9 +30,9 @@
    若改端口: /opt/homebrew/opt/jenkins/bin/jenkins --httpPort=9090
    
    ```
-
+   
    2. brew services start jenkins--> 访问地址 http://localhost:8080
-
+   
       ```
       启动 Jenkins
       
@@ -38,7 +41,7 @@
       
       
       ```
-
+   
    3. 在浏览器地址栏输入：重启
    
    ```

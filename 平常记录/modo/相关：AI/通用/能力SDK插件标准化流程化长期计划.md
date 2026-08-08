@@ -445,7 +445,7 @@ rg -n "query|mock|adapterTMessageForApi|guildRequest|guildUpdate" /Users/lin/Doc
 接手者开始命令建议：
 
 ```bash
-sed -n '1,260p' /Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md
+sed -n '1,260p' /Users/lin/Desktop/记录/平常记录/modo/相关：AI/通用/能力SDK插件标准化流程化长期计划.md
 rg -n "adapterTMessageForApi|guildRequest|guildUpdate|query" /Users/lin/Documents/modo-native-ability-ios/NativeBility/NativeBility/nt+ability/Plugin/Widget /Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Widget
 rg -n "整体进度|当前进度|剩余待处理|33 / 33|100.0%" /Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/plugin-inventory.md
 rg -n "adapterTMessageForApi|删除后恢复要点|删除后恢复验证|mock 现状" /Users/lin/Documents/modo-native-ability-ios/NativeBility/docs/nt+ability/Plugin/Share
@@ -460,7 +460,7 @@ rg -n "query|mock|guildRequest|guildUpdate|competition" /Users/lin/Documents/mod
 
 - 本文件的“当前进度”。
 - 本文件的“下一步”。
-- 如果修改了 AI 工作流规则，再更新 `/Users/lin/Desktop/yjcXcode/平常记录/modo/相关：AI/skills/skills-rules-change-log.md`。
+- 如果修改了 AI 工作流规则，再更新 `/Users/lin/Desktop/记录/平常记录/modo/相关：AI/skills/skills-rules-change-log.md`。
 - 上述桌面 AI 日志是当前用户本机个人工作流目录；若在同事机器或不存在该目录的环境中接手，可跳过桌面同步，不应因此阻塞能力文档或代码任务。
 
 如果只修改业务代码或能力文档，不一定要更新 AI 规则日志，但必须在最终回复中说明文档检查和验证情况。
