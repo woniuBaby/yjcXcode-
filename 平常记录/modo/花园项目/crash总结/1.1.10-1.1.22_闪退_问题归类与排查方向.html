@@ -1,0 +1,1925 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<title>1.1.10–1.1.22 分版本闪退（每版一张表）</title>
+<style>
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;margin:28px;color:#111;background:#fff;max-width:1280px}
+  h1{font-size:22px;margin:0 0 6px}
+  h2{font-size:16px;margin:28px 0 8px;border-left:4px solid #222;padding-left:8px}
+  p,li{font-size:14px;line-height:1.55}
+  .meta{color:#444;margin:0 0 18px;font-size:13px;line-height:1.5}
+  .toc{margin:12px 0 24px;font-size:13px;line-height:1.8}
+  .toc a{margin-right:10px;white-space:nowrap}
+  table{border-collapse:collapse;width:100%;margin:8px 0 10px}
+  th,td{border:1px solid #ccc;padding:8px 9px;vertical-align:top;font-size:12.5px;line-height:1.45;text-align:left;word-wrap:break-word}
+  th{background:#f2f2f2}
+  .p0{background:#fff4f4}
+  .p1{background:#fffaf0}
+  .p2{background:#f7f7f7}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px}
+  .id{color:#666}
+  .note{margin:0 0 8px;font-size:13px;color:#333}
+  .concl{margin:0 0 8px;font-size:13.5px}
+  .nav{position:sticky;top:0;background:#fff;border-bottom:1px solid #ddd;padding:8px 0;margin:0 0 12px;z-index:2;font-size:12px}
+  .kill-yes{background:#eee;color:#222;font-size:12px;line-height:1.4}
+</style>
+</head>
+<body>
+<h1>1.1.10–1.1.22 分版本闪退（每版一张表）</h1>
+<p class="meta">
+每个版本单独一张表（模板原 3 表已合并为 1 表）。Top15。<br/>
+时间窗口：<b>1.1.10～1.1.19 = Last Year</b>；<b>1.1.19～1.1.22 = Last Two Weeks</b>（1.1.19 两窗口各一张）。<br/>
+数据：1.1.10 / 1.1.18 Last Year 与 1.1.20～1.1.22 近两周来自 Organizer <code>ListablePoints.json</code>（按版本过滤设备数）；1.1.11～1.1.17、1.1.19 来自 <code>DistributionInfo.json</code> 版本拆分（该版本需进入该 Crash Point 的 Top 版本才会列出，条数可能不足 15）。<br/>
+1.1.14 本地几乎无量。刷新：近两周约 2026-08-13；1.1.10 Last Year 2026-08-14；1.1.18 Last Year 2026-08-04。<br/>
+最后一列只给「强杀/进程已死还在上报」打标，其它行留空。判定：EXC_CRASH 且 codes 0x0/0x0，落在空闲等待线程（UIEventFetcher / RunLoop / Semaphore::wait），或 0xdead10cc / NO_CRASH_STACK / UIKit 空符号。这类不当成产品闪退。Spine 等 EXC_BAD_ACCESS 不打标。
+</p>
+<div class="nav">跳转：
+<a href="#v1110_y">1.1.10 Last Year</a> · <a href="#v1111_y">1.1.11 Last Year</a> · <a href="#v1112_y">1.1.12 Last Year</a> · <a href="#v1113_y">1.1.13 Last Year</a> · <a href="#v1114_y">1.1.14 Last Year</a> · <a href="#v1115_y">1.1.15 Last Year</a> · <a href="#v1116_y">1.1.16 Last Year</a> · <a href="#v1117_y">1.1.17 Last Year</a> · <a href="#v1118_y">1.1.18 Last Year</a> · <a href="#v1119_y">1.1.19 Last Year</a> · <a href="#v1119_w">1.1.19 Last Two Weeks</a> · <a href="#v1120_w">1.1.20 Last Two Weeks</a> · <a href="#v1121_w">1.1.21 Last Two Weeks</a> · <a href="#v1122_w">1.1.22 Last Two Weeks</a></div>
+
+<h2 id="v1110_y">1.1.10 · Last Year</h2>
+<p class="note">设备数口径：ListablePoints 按版本过滤。前 15 合计 13480（条目间可能有同一设备重复，仅作量级）。refresh=2026-08-14T06:38:12Z</p>
+<p class="concl"><b>本版结论：</b>本版可归因主因：spine::Animation::binarySearch + 40（4709）；CCMTLCommandBuffer::copyBuffersToTexture（667）。本表 Top 中，「强杀/进程已死还在上报」占设备数 <b>40%</b>（5423/13480）。</p>
+<table>
+  <tr>
+    <th style="width:28px">#</th>
+    <th style="width:40px">优先级</th>
+    <th style="width:52px">设备</th>
+    <th style="width:22%">Crash Point</th>
+    <th style="width:12%">类型 / 模块</th>
+    <th style="width:20%">实质原因</th>
+    <th>排查方向</th>
+    <th style="width:120px">说明</th>
+  </tr>
+  <tr class="p0">
+    <td>1</td>
+    <td><b>高</b></td>
+    <td>4709</td>
+    <td><code>spine::Animation::binarySearch + 40</code><br/><span class="id">id: DYCtLsGQ9dTTZVtv86z1nb</span></td>
+    <td>游戏脚本 + 引擎 Spine</td>
+    <td>Spine 时间轴二分查找踩非法内存。常见空/损坏 frames，或 Skeleton/Animation 已释放仍 update。链：tick → js_cc_SkeletonAnimation_update → AnimationState::apply → TranslateTimeline → binarySearch（V8/jsb）。</td>
+    <td>节点销毁后是否仍 update；切场景是否未停动画；Spine 资源是否空/损坏。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>2</td>
+    <td><b>低</b></td>
+    <td>1152</td>
+    <td><code>UIEventFetcher threadMain + 408</code><br/><span class="id">id: wS7kp73XfZA0BfdWki9in</span></td>
+    <td>系统归类落点</td>
+    <td>与 +420 同家族不同偏移。栈停在 mach_msg → CFRunLoop → UIEventFetcher。</td>
+    <td>同 UIEventFetcher 家族，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>3</td>
+    <td><b>中</b></td>
+    <td>835</td>
+    <td><code>cc::Semaphore::wait() + 16</code><br/><span class="id">id: Dy6cyhTJizogQSegMX_WS5</span></td>
+    <td>引擎帧同步 / GFX</td>
+    <td>Root::frameMoveEnd 等待渲染/GPU 信号量异常（超时、未 signal、或前序 GFX 异常后同步态损坏）。链：Semaphore::wait → frameMoveEnd → js_cc_Root_frameMove。</td>
+    <td>先修贴图空 buffer，再观察本点；若仍高，查 frameMove 与进前后台 GPU 队列。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>4</td>
+    <td><b>中低</b></td>
+    <td>769</td>
+    <td><code>GDTSettingManager readDefaultValue + 568</code><br/><span class="id">id: C5FKPHBYMMr0wJEjqMFp_M</span></td>
+    <td>广告 SDK（优量汇 GDT）初始化</td>
+    <td>EXC_CRASH(SIGSEGV)。主线程在 GDT dispatch_once 初始化里等 NSRecursiveLock，另一线程在 +initialize 扩 NSData。经 TopOn ATGDTBaseManager initSDKWithAppID 进入。</td>
+    <td>集中在 1.1.10～1.1.12。之后退出前 15，视为已缓解；除非回归否则不作为 1.1.20+ 主攻。</td>
+    <td></td>
+  </tr>
+  <tr class="p1">
+    <td>5</td>
+    <td><b>中</b></td>
+    <td>710</td>
+    <td><code>MessageQueue::MemoryAllocator::request + 56</code><br/><span class="id">id: BRQad5-bIyhG1MThaNZgNH</span></td>
+    <td>引擎消息队列分配</td>
+    <td>渲染 MessageQueue 向分配器要内存时崩溃，偏内存压力或命令积压。</td>
+    <td>与贴图异步上传、大命令积压一起看；对照 NO_CRASH_STACK。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p0">
+    <td>6</td>
+    <td><b>高</b></td>
+    <td>667</td>
+    <td><code>CCMTLCommandBuffer::copyBuffersToTexture</code><br/><span class="id">id: Bz6yzyrU-xMa3LyYrx_kHM</span></td>
+    <td>引擎 GFX/Metal</td>
+    <td>与 doBufferTextureCopy 同族：MessageQueue 消费线程上 Metal 路径 buffer→texture 拷贝读到空/野指针。</td>
+    <td>与 doBufferTextureCopy 一并修；贴图修复后观察 Semaphore 是否下降。</td>
+    <td></td>
+  </tr>
+  <tr class="p1">
+    <td>7</td>
+    <td><b>中</b></td>
+    <td>648</td>
+    <td><code>cc::RefCounted::release()</code><br/><span class="id">id: Ckzy-THpeGDwnxoBI7w-Ta</span></td>
+    <td>引擎 / WebSocket + V8 GC</td>
+    <td>EXC_BAD_ACCESS 地址 0x8。样本：V8 GC → webSocketFinalize → RefCounted::release。原生对象已释放，JS finalize 仍 release。</td>
+    <td>WebSocket 关闭与 V8 弱回调时序；是否 double-free。可与 webSocketFinalize 对照。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>8</td>
+    <td><b>低</b></td>
+    <td>640</td>
+    <td><code>__CFRunLoopServiceMachPort + 160</code><br/><span class="id">id: Dd3gWlREIS0UracQ_tDIJ</span></td>
+    <td>系统 / 进程终止归类</td>
+    <td>主线程 RunLoop 收 Mach 消息时进程退出。部分样本为 0xdead10cc（后台仍持锁被杀）。</td>
+    <td>进后台是否未关 SQLite/文件句柄。次要项。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>9</td>
+    <td><b>低</b></td>
+    <td>639</td>
+    <td><code>NO_CRASH_STACK</code><br/><span class="id">id: CX4TR2FhT4q3kSZ6oesj63</span></td>
+    <td>无栈 / 被杀归类</td>
+    <td>无有效崩溃栈。常见 Jetsam、看门狗或系统杀进程，无法定位业务帧。</td>
+    <td>结合内存与是否进后台；不作首要代码修复。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>10</td>
+    <td><b>低</b></td>
+    <td>547</td>
+    <td><code>UIKitCore: + -1（空符号）</code><br/><span class="id">id: DlmMpUlOi9xJldzoOvTvaq</span></td>
+    <td>系统无符号归类</td>
+    <td>Organizer 符号缺失。部分下载日志主线程实际是 Spine binarySearch，崩溃线程在系统侧。多为归类落点。</td>
+    <td>先符号化再判断；可能是 Spine/GFX 的错误归类，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>11</td>
+    <td><b>低</b></td>
+    <td>515</td>
+    <td><code>UIEventFetcher threadMain + 424</code><br/><span class="id">id: DdJJE5zcXIGxEtaa1cdix7</span></td>
+    <td>系统归类落点</td>
+    <td>与 +420 同家族（+424 vs +420）。EXC_CRASH(SIGSEGV)/codes 0。</td>
+    <td>同 UIEventFetcher 家族，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>12</td>
+    <td><b>低</b></td>
+    <td>453</td>
+    <td><code>JavaScriptCore scavenger_thread_main</code><br/><span class="id">id: cGjeLnYMxs19Oa1kRW0Fc</span></td>
+    <td>系统 JSC 回收线程</td>
+    <td>JSC 清道夫线程。游戏主逻辑走 V8/jsb，此点多为 WebView/广告 WKWebView 的 JSC 或 Organizer 归类。</td>
+    <td>确认是否广告 WebView；不作为游戏脚本主攻。</td>
+    <td></td>
+  </tr>
+  <tr class="p1">
+    <td>13</td>
+    <td><b>中</b></td>
+    <td>432</td>
+    <td><code>boost::asio kqueue_reactor::run</code><br/><span class="id">id: B4Is8qmccDTrr0bbBZIkAp</span></td>
+    <td>引擎网络 (WebSocket/asio)</td>
+    <td>asio kqueue 反应器线程崩溃，偏 WebSocket/网络事件循环。</td>
+    <td>对照 webSocketFinalize / RefCounted；连接关闭后是否仍 run。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>14</td>
+    <td><b>低</b></td>
+    <td>385</td>
+    <td><code>UIKitCore + 4319260（未符号化）</code><br/><span class="id">id: DPajtsvUJB8g6HZIj2h3Yq</span></td>
+    <td>系统无符号归类</td>
+    <td>UIKit 未符号化偏移，与 UIEventFetcher / + -1 同类系统落点。</td>
+    <td>不单独当根因。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>15</td>
+    <td><b>低</b></td>
+    <td>379</td>
+    <td><code>CA::AttrList::Node::alloc_memory</code><br/><span class="id">id: Clvx0jHKoK2Uee_AZ4kxTD</span></td>
+    <td>系统 QuartzCore 分配</td>
+    <td>Core Animation 属性节点分配崩溃，偏内存压力或图层属性异常。</td>
+    <td>结合内存峰值；不作游戏脚本首要项。</td>
+    <td></td>
+  </tr>
+</table>
+
+<h2 id="v1111_y">1.1.11 · Last Year</h2>
+<p class="note">设备数口径：DistributionInfo 版本拆分（可能不全）；本窗口仅列出 14 条，不足 15。前 14 合计 26583（条目间可能有同一设备重复，仅作量级）。refresh=—</p>
+<p class="concl"><b>本版结论：</b>本版可归因主因：spine::Animation::binarySearch + 40（9423）；CCMTLCommandBuffer::copyBuffersToTexture（1813）；cc::gfx::doBufferTextureCopy + 464（1106）。本表 Top 中，「强杀/进程已死还在上报」占设备数 <b>42%</b>（11053/26583）。</p>
+<table>
+  <tr>
+    <th style="width:28px">#</th>
+    <th style="width:40px">优先级</th>
+    <th style="width:52px">设备</th>
+    <th style="width:22%">Crash Point</th>
+    <th style="width:12%">类型 / 模块</th>
+    <th style="width:20%">实质原因</th>
+    <th>排查方向</th>
+    <th style="width:120px">说明</th>
+  </tr>
+  <tr class="p0">
+    <td>1</td>
+    <td><b>高</b></td>
+    <td>9423</td>
+    <td><code>spine::Animation::binarySearch + 40</code><br/><span class="id">id: DYCtLsGQ9dTTZVtv86z1nb</span></td>
+    <td>游戏脚本 + 引擎 Spine</td>
+    <td>Spine 时间轴二分查找踩非法内存。常见空/损坏 frames，或 Skeleton/Animation 已释放仍 update。链：tick → js_cc_SkeletonAnimation_update → AnimationState::apply → TranslateTimeline → binarySearch（V8/jsb）。</td>
+    <td>节点销毁后是否仍 update；切场景是否未停动画；Spine 资源是否空/损坏。</td>
+    <td></td>
+  </tr>
+  <tr class="p1">
+    <td>2</td>
+    <td><b>中</b></td>
+    <td>2123</td>
+    <td><code>cc::Semaphore::wait() + 16</code><br/><span class="id">id: Dy6cyhTJizogQSegMX_WS5</span></td>
+    <td>引擎帧同步 / GFX</td>
+    <td>Root::frameMoveEnd 等待渲染/GPU 信号量异常（超时、未 signal、或前序 GFX 异常后同步态损坏）。链：Semaphore::wait → frameMoveEnd → js_cc_Root_frameMove。</td>
+    <td>先修贴图空 buffer，再观察本点；若仍高，查 frameMove 与进前后台 GPU 队列。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>3</td>
+    <td><b>中低</b></td>
+    <td>1898</td>
+    <td><code>GDTSettingManager readDefaultValue + 568</code><br/><span class="id">id: C5FKPHBYMMr0wJEjqMFp_M</span></td>
+    <td>广告 SDK（优量汇 GDT）初始化</td>
+    <td>EXC_CRASH(SIGSEGV)。主线程在 GDT dispatch_once 初始化里等 NSRecursiveLock，另一线程在 +initialize 扩 NSData。经 TopOn ATGDTBaseManager initSDKWithAppID 进入。</td>
+    <td>集中在 1.1.10～1.1.12。之后退出前 15，视为已缓解；除非回归否则不作为 1.1.20+ 主攻。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>4</td>
+    <td><b>低</b></td>
+    <td>1844</td>
+    <td><code>UIKitCore: + -1（空符号）</code><br/><span class="id">id: DlmMpUlOi9xJldzoOvTvaq</span></td>
+    <td>系统无符号归类</td>
+    <td>Organizer 符号缺失。部分下载日志主线程实际是 Spine binarySearch，崩溃线程在系统侧。多为归类落点。</td>
+    <td>先符号化再判断；可能是 Spine/GFX 的错误归类，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p0">
+    <td>5</td>
+    <td><b>高</b></td>
+    <td>1813</td>
+    <td><code>CCMTLCommandBuffer::copyBuffersToTexture</code><br/><span class="id">id: Bz6yzyrU-xMa3LyYrx_kHM</span></td>
+    <td>引擎 GFX/Metal</td>
+    <td>与 doBufferTextureCopy 同族：MessageQueue 消费线程上 Metal 路径 buffer→texture 拷贝读到空/野指针。</td>
+    <td>与 doBufferTextureCopy 一并修；贴图修复后观察 Semaphore 是否下降。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>6</td>
+    <td><b>低</b></td>
+    <td>1710</td>
+    <td><code>UIEventFetcher threadMain + 408</code><br/><span class="id">id: wS7kp73XfZA0BfdWki9in</span></td>
+    <td>系统归类落点</td>
+    <td>与 +420 同家族不同偏移。栈停在 mach_msg → CFRunLoop → UIEventFetcher。</td>
+    <td>同 UIEventFetcher 家族，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>7</td>
+    <td><b>低</b></td>
+    <td>1544</td>
+    <td><code>NO_CRASH_STACK</code><br/><span class="id">id: CX4TR2FhT4q3kSZ6oesj63</span></td>
+    <td>无栈 / 被杀归类</td>
+    <td>无有效崩溃栈。常见 Jetsam、看门狗或系统杀进程，无法定位业务帧。</td>
+    <td>结合内存与是否进后台；不作首要代码修复。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>8</td>
+    <td><b>中</b></td>
+    <td>1280</td>
+    <td><code>basic_string&lt;char16_t&gt;::__grow_by</code><br/><span class="id">id: BXUcwRHzih5eMqTMyZrVNp</span></td>
+    <td>游戏脚本 + 引擎字符串</td>
+    <td>js_readJsonFile 后台读文件后 UTF8→UTF16 扩容失败并 abort。链：__grow_by → StringUtils::UTF8ToUTF16 → js_readJsonFile → LegacyThreadPool。</td>
+    <td>坏文件、超大文件、非 UTF8；js_readJsonFile 边界处理。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>9</td>
+    <td><b>低</b></td>
+    <td>1165</td>
+    <td><code>__CFRunLoopServiceMachPort + 160</code><br/><span class="id">id: Dd3gWlREIS0UracQ_tDIJ</span></td>
+    <td>系统 / 进程终止归类</td>
+    <td>主线程 RunLoop 收 Mach 消息时进程退出。部分样本为 0xdead10cc（后台仍持锁被杀）。</td>
+    <td>进后台是否未关 SQLite/文件句柄。次要项。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>10</td>
+    <td><b>低</b></td>
+    <td>1161</td>
+    <td><code>UIKitCore + 944892（未符号化）</code><br/><span class="id">id: DQ7Vv5sOEO50YYZD1_3WBU</span></td>
+    <td>系统无符号归类</td>
+    <td>UIKit 未符号化偏移，系统归类落点。</td>
+    <td>不单独当根因。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p0">
+    <td>11</td>
+    <td><b>高</b></td>
+    <td>1106</td>
+    <td><code>cc::gfx::doBufferTextureCopy + 464</code><br/><span class="id">id: C4EdIm0vNvzjBfYmtcfrU</span></td>
+    <td>游戏脚本 + 引擎 GFX</td>
+    <td>纹理上传时源 buffer 为空，memmove 空指针。多由 JS SimpleTexture.uploadData 触发，部分经 WebSocket onMessage。EXC_BAD_ACCESS at 0x0。</td>
+    <td>uploadData 前校验指针与长度；异步回调时纹理是否已释放。与 copyBuffersToTexture / MessageQueue 合并看。</td>
+    <td></td>
+  </tr>
+  <tr class="p1">
+    <td>12</td>
+    <td><b>中</b></td>
+    <td>897</td>
+    <td><code>MessageQueue::MemoryAllocator::request + 56</code><br/><span class="id">id: BRQad5-bIyhG1MThaNZgNH</span></td>
+    <td>引擎消息队列分配</td>
+    <td>渲染 MessageQueue 向分配器要内存时崩溃，偏内存压力或命令积压。</td>
+    <td>与贴图异步上传、大命令积压一起看；对照 NO_CRASH_STACK。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>13</td>
+    <td><b>低</b></td>
+    <td>609</td>
+    <td><code>UIEventFetcher threadMain + 420</code><br/><span class="id">id: DLv6v_kVaI3SezmMxhpnMD</span></td>
+    <td>系统归类落点</td>
+    <td>系统事件线程在 RunLoop/mach_msg 空闲等待时进程退出。EXC_CRASH(SIGSEGV)、codes 0；frame0 无游戏/Spine/GFX。Organizer 按该符号归类，业务根因不明确。</td>
+    <td>不宜当业务根因。优先观察高优先级项修复后是否下降。与 +408/+424 同家族。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>14</td>
+    <td><b>低</b></td>
+    <td>10</td>
+    <td><code>HuaYuann 未符号化偏移</code><br/><span class="id">id: D7ymrES9Nxhf0fn1eC-ktB</span></td>
+    <td>未符号化 App 帧</td>
+    <td>仅有镜像偏移，无函数名。本地样本少。</td>
+    <td>用对应版本 dSYM 符号化后再归类。</td>
+    <td></td>
+  </tr>
+</table>
+
+<h2 id="v1112_y">1.1.12 · Last Year</h2>
+<p class="note">设备数口径：DistributionInfo 版本拆分（可能不全）。前 15 合计 6895（条目间可能有同一设备重复，仅作量级）。refresh=—</p>
+<p class="concl"><b>本版结论：</b>本版可归因主因：cc::gfx::doBufferTextureCopy + 464（948）；spine::Animation::binarySearch + 40（671）；CCMTLCommandBuffer::copyBuffersToTexture（216）。本表 Top 中，「强杀/进程已死还在上报」占设备数 <b>59%</b>（4102/6895）。</p>
+<table>
+  <tr>
+    <th style="width:28px">#</th>
+    <th style="width:40px">优先级</th>
+    <th style="width:52px">设备</th>
+    <th style="width:22%">Crash Point</th>
+    <th style="width:12%">类型 / 模块</th>
+    <th style="width:20%">实质原因</th>
+    <th>排查方向</th>
+    <th style="width:120px">说明</th>
+  </tr>
+  <tr class="p0">
+    <td>1</td>
+    <td><b>高</b></td>
+    <td>948</td>
+    <td><code>cc::gfx::doBufferTextureCopy + 464</code><br/><span class="id">id: C4EdIm0vNvzjBfYmtcfrU</span></td>
+    <td>游戏脚本 + 引擎 GFX</td>
+    <td>纹理上传时源 buffer 为空，memmove 空指针。多由 JS SimpleTexture.uploadData 触发，部分经 WebSocket onMessage。EXC_BAD_ACCESS at 0x0。</td>
+    <td>uploadData 前校验指针与长度；异步回调时纹理是否已释放。与 copyBuffersToTexture / MessageQueue 合并看。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>2</td>
+    <td><b>低</b></td>
+    <td>898</td>
+    <td><code>UIKitCore: + -1（空符号）</code><br/><span class="id">id: DlmMpUlOi9xJldzoOvTvaq</span></td>
+    <td>系统无符号归类</td>
+    <td>Organizer 符号缺失。部分下载日志主线程实际是 Spine binarySearch，崩溃线程在系统侧。多为归类落点。</td>
+    <td>先符号化再判断；可能是 Spine/GFX 的错误归类，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>3</td>
+    <td><b>中</b></td>
+    <td>792</td>
+    <td><code>cc::Semaphore::wait() + 16</code><br/><span class="id">id: Dy6cyhTJizogQSegMX_WS5</span></td>
+    <td>引擎帧同步 / GFX</td>
+    <td>Root::frameMoveEnd 等待渲染/GPU 信号量异常（超时、未 signal、或前序 GFX 异常后同步态损坏）。链：Semaphore::wait → frameMoveEnd → js_cc_Root_frameMove。</td>
+    <td>先修贴图空 buffer，再观察本点；若仍高，查 frameMove 与进前后台 GPU 队列。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p0">
+    <td>4</td>
+    <td><b>高</b></td>
+    <td>671</td>
+    <td><code>spine::Animation::binarySearch + 40</code><br/><span class="id">id: DYCtLsGQ9dTTZVtv86z1nb</span></td>
+    <td>游戏脚本 + 引擎 Spine</td>
+    <td>Spine 时间轴二分查找踩非法内存。常见空/损坏 frames，或 Skeleton/Animation 已释放仍 update。链：tick → js_cc_SkeletonAnimation_update → AnimationState::apply → TranslateTimeline → binarySearch（V8/jsb）。</td>
+    <td>节点销毁后是否仍 update；切场景是否未停动画；Spine 资源是否空/损坏。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>5</td>
+    <td><b>低</b></td>
+    <td>531</td>
+    <td><code>NO_CRASH_STACK</code><br/><span class="id">id: CX4TR2FhT4q3kSZ6oesj63</span></td>
+    <td>无栈 / 被杀归类</td>
+    <td>无有效崩溃栈。常见 Jetsam、看门狗或系统杀进程，无法定位业务帧。</td>
+    <td>结合内存与是否进后台；不作首要代码修复。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>6</td>
+    <td><b>中低</b></td>
+    <td>476</td>
+    <td><code>GDTSettingManager readDefaultValue + 568</code><br/><span class="id">id: C5FKPHBYMMr0wJEjqMFp_M</span></td>
+    <td>广告 SDK（优量汇 GDT）初始化</td>
+    <td>EXC_CRASH(SIGSEGV)。主线程在 GDT dispatch_once 初始化里等 NSRecursiveLock，另一线程在 +initialize 扩 NSData。经 TopOn ATGDTBaseManager initSDKWithAppID 进入。</td>
+    <td>集中在 1.1.10～1.1.12。之后退出前 15，视为已缓解；除非回归否则不作为 1.1.20+ 主攻。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>7</td>
+    <td><b>低</b></td>
+    <td>454</td>
+    <td><code>UIKitCore + 944892（未符号化）</code><br/><span class="id">id: DQ7Vv5sOEO50YYZD1_3WBU</span></td>
+    <td>系统无符号归类</td>
+    <td>UIKit 未符号化偏移，系统归类落点。</td>
+    <td>不单独当根因。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>8</td>
+    <td><b>中</b></td>
+    <td>395</td>
+    <td><code>MessageQueue::MemoryAllocator::request + 56</code><br/><span class="id">id: BRQad5-bIyhG1MThaNZgNH</span></td>
+    <td>引擎消息队列分配</td>
+    <td>渲染 MessageQueue 向分配器要内存时崩溃，偏内存压力或命令积压。</td>
+    <td>与贴图异步上传、大命令积压一起看；对照 NO_CRASH_STACK。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>9</td>
+    <td><b>低</b></td>
+    <td>315</td>
+    <td><code>UIEventFetcher threadMain + 420</code><br/><span class="id">id: DLv6v_kVaI3SezmMxhpnMD</span></td>
+    <td>系统归类落点</td>
+    <td>系统事件线程在 RunLoop/mach_msg 空闲等待时进程退出。EXC_CRASH(SIGSEGV)、codes 0；frame0 无游戏/Spine/GFX。Organizer 按该符号归类，业务根因不明确。</td>
+    <td>不宜当业务根因。优先观察高优先级项修复后是否下降。与 +408/+424 同家族。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>10</td>
+    <td><b>中</b></td>
+    <td>311</td>
+    <td><code>basic_string&lt;char16_t&gt;::__grow_by</code><br/><span class="id">id: BXUcwRHzih5eMqTMyZrVNp</span></td>
+    <td>游戏脚本 + 引擎字符串</td>
+    <td>js_readJsonFile 后台读文件后 UTF8→UTF16 扩容失败并 abort。链：__grow_by → StringUtils::UTF8ToUTF16 → js_readJsonFile → LegacyThreadPool。</td>
+    <td>坏文件、超大文件、非 UTF8；js_readJsonFile 边界处理。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>11</td>
+    <td><b>低</b></td>
+    <td>268</td>
+    <td><code>UIKitCore + 4319260（未符号化）</code><br/><span class="id">id: DPajtsvUJB8g6HZIj2h3Yq</span></td>
+    <td>系统无符号归类</td>
+    <td>UIKit 未符号化偏移，与 UIEventFetcher / + -1 同类系统落点。</td>
+    <td>不单独当根因。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>12</td>
+    <td><b>低</b></td>
+    <td>261</td>
+    <td><code>UIEventFetcher threadMain + 424</code><br/><span class="id">id: DdJJE5zcXIGxEtaa1cdix7</span></td>
+    <td>系统归类落点</td>
+    <td>与 +420 同家族（+424 vs +420）。EXC_CRASH(SIGSEGV)/codes 0。</td>
+    <td>同 UIEventFetcher 家族，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p0">
+    <td>13</td>
+    <td><b>高</b></td>
+    <td>216</td>
+    <td><code>CCMTLCommandBuffer::copyBuffersToTexture</code><br/><span class="id">id: Bz6yzyrU-xMa3LyYrx_kHM</span></td>
+    <td>引擎 GFX/Metal</td>
+    <td>与 doBufferTextureCopy 同族：MessageQueue 消费线程上 Metal 路径 buffer→texture 拷贝读到空/野指针。</td>
+    <td>与 doBufferTextureCopy 一并修；贴图修复后观察 Semaphore 是否下降。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>14</td>
+    <td><b>低</b></td>
+    <td>188</td>
+    <td><code>__CFRunLoopServiceMachPort + 160</code><br/><span class="id">id: Dd3gWlREIS0UracQ_tDIJ</span></td>
+    <td>系统 / 进程终止归类</td>
+    <td>主线程 RunLoop 收 Mach 消息时进程退出。部分样本为 0xdead10cc（后台仍持锁被杀）。</td>
+    <td>进后台是否未关 SQLite/文件句柄。次要项。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>15</td>
+    <td><b>低</b></td>
+    <td>171</td>
+    <td><code>LegacyThreadPool __thread_proxy</code><br/><span class="id">id: C8yeE1X02lKFmX1ZCXypT2</span></td>
+    <td>引擎后台线程池</td>
+    <td>Cocos LegacyThreadPool 工作线程崩溃。常与读文件/JSON/资源加载同现。</td>
+    <td>与 js_readJsonFile / FileUtils 一起查；线程退出时任务是否仍访问已销毁对象。</td>
+    <td></td>
+  </tr>
+</table>
+
+<h2 id="v1113_y">1.1.13 · Last Year</h2>
+<p class="note">设备数口径：DistributionInfo 版本拆分（可能不全）。前 15 合计 17397（条目间可能有同一设备重复，仅作量级）。refresh=—</p>
+<p class="concl"><b>本版结论：</b>本版可归因主因：spine::Animation::binarySearch + 40（106）；cc::gfx::doBufferTextureCopy + 464（97）。本表 Top 中，「强杀/进程已死还在上报」占设备数 <b>84%</b>（14685/17397）。</p>
+<table>
+  <tr>
+    <th style="width:28px">#</th>
+    <th style="width:40px">优先级</th>
+    <th style="width:52px">设备</th>
+    <th style="width:22%">Crash Point</th>
+    <th style="width:12%">类型 / 模块</th>
+    <th style="width:20%">实质原因</th>
+    <th>排查方向</th>
+    <th style="width:120px">说明</th>
+  </tr>
+  <tr class="p2">
+    <td>1</td>
+    <td><b>低</b></td>
+    <td>5395</td>
+    <td><code>UIEventFetcher threadMain + 420</code><br/><span class="id">id: DLv6v_kVaI3SezmMxhpnMD</span></td>
+    <td>系统归类落点</td>
+    <td>系统事件线程在 RunLoop/mach_msg 空闲等待时进程退出。EXC_CRASH(SIGSEGV)、codes 0；frame0 无游戏/Spine/GFX。Organizer 按该符号归类，业务根因不明确。</td>
+    <td>不宜当业务根因。优先观察高优先级项修复后是否下降。与 +408/+424 同家族。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>2</td>
+    <td><b>低</b></td>
+    <td>3555</td>
+    <td><code>UIKitCore: + -1（空符号）</code><br/><span class="id">id: DlmMpUlOi9xJldzoOvTvaq</span></td>
+    <td>系统无符号归类</td>
+    <td>Organizer 符号缺失。部分下载日志主线程实际是 Spine binarySearch，崩溃线程在系统侧。多为归类落点。</td>
+    <td>先符号化再判断；可能是 Spine/GFX 的错误归类，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>3</td>
+    <td><b>中</b></td>
+    <td>2363</td>
+    <td><code>cc::Semaphore::wait() + 16</code><br/><span class="id">id: Dy6cyhTJizogQSegMX_WS5</span></td>
+    <td>引擎帧同步 / GFX</td>
+    <td>Root::frameMoveEnd 等待渲染/GPU 信号量异常（超时、未 signal、或前序 GFX 异常后同步态损坏）。链：Semaphore::wait → frameMoveEnd → js_cc_Root_frameMove。</td>
+    <td>先修贴图空 buffer，再观察本点；若仍高，查 frameMove 与进前后台 GPU 队列。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>4</td>
+    <td><b>低</b></td>
+    <td>1460</td>
+    <td><code>???: 0x0</code><br/><span class="id">id: CUI3RT1y7gVkeQebMSCEV6</span></td>
+    <td>未符号化 / 空指针归类</td>
+    <td>符号为 0x0，无法从 Organizer 名称还原业务帧。</td>
+    <td>抽本地符号化日志看真实 frame0；若与 Spine/GFX 重合则并入对应项。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>5</td>
+    <td><b>低</b></td>
+    <td>1383</td>
+    <td><code>UIEventFetcher threadMain + 424</code><br/><span class="id">id: DdJJE5zcXIGxEtaa1cdix7</span></td>
+    <td>系统归类落点</td>
+    <td>与 +420 同家族（+424 vs +420）。EXC_CRASH(SIGSEGV)/codes 0。</td>
+    <td>同 UIEventFetcher 家族，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>6</td>
+    <td><b>低</b></td>
+    <td>778</td>
+    <td><code>UIKitCore + 4319260（未符号化）</code><br/><span class="id">id: DPajtsvUJB8g6HZIj2h3Yq</span></td>
+    <td>系统无符号归类</td>
+    <td>UIKit 未符号化偏移，与 UIEventFetcher / + -1 同类系统落点。</td>
+    <td>不单独当根因。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>7</td>
+    <td><b>低</b></td>
+    <td>702</td>
+    <td><code>NO_CRASH_STACK</code><br/><span class="id">id: CX4TR2FhT4q3kSZ6oesj63</span></td>
+    <td>无栈 / 被杀归类</td>
+    <td>无有效崩溃栈。常见 Jetsam、看门狗或系统杀进程，无法定位业务帧。</td>
+    <td>结合内存与是否进后台；不作首要代码修复。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>8</td>
+    <td><b>低</b></td>
+    <td>683</td>
+    <td><code>JavaScriptCore scavenger_thread_main</code><br/><span class="id">id: U_6Nw6LDUNZPoXMRmrQSv</span></td>
+    <td>系统 JSC 回收线程</td>
+    <td>与另一 scavenger 点同类（偏移不同）。</td>
+    <td>同 JSC scavenger，不作为游戏主攻。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>9</td>
+    <td><b>低</b></td>
+    <td>403</td>
+    <td><code>__CFRunLoopServiceMachPort + 160</code><br/><span class="id">id: Dd3gWlREIS0UracQ_tDIJ</span></td>
+    <td>系统 / 进程终止归类</td>
+    <td>主线程 RunLoop 收 Mach 消息时进程退出。部分样本为 0xdead10cc（后台仍持锁被杀）。</td>
+    <td>进后台是否未关 SQLite/文件句柄。次要项。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>10</td>
+    <td><b>低</b></td>
+    <td>361</td>
+    <td><code>LegacyThreadPool __thread_proxy</code><br/><span class="id">id: C8yeE1X02lKFmX1ZCXypT2</span></td>
+    <td>引擎后台线程池</td>
+    <td>Cocos LegacyThreadPool 工作线程崩溃。常与读文件/JSON/资源加载同现。</td>
+    <td>与 js_readJsonFile / FileUtils 一起查；线程退出时任务是否仍访问已销毁对象。</td>
+    <td></td>
+  </tr>
+  <tr class="p0">
+    <td>11</td>
+    <td><b>高</b></td>
+    <td>106</td>
+    <td><code>spine::Animation::binarySearch + 40</code><br/><span class="id">id: DYCtLsGQ9dTTZVtv86z1nb</span></td>
+    <td>游戏脚本 + 引擎 Spine</td>
+    <td>Spine 时间轴二分查找踩非法内存。常见空/损坏 frames，或 Skeleton/Animation 已释放仍 update。链：tick → js_cc_SkeletonAnimation_update → AnimationState::apply → TranslateTimeline → binarySearch（V8/jsb）。</td>
+    <td>节点销毁后是否仍 update；切场景是否未停动画；Spine 资源是否空/损坏。</td>
+    <td></td>
+  </tr>
+  <tr class="p0">
+    <td>12</td>
+    <td><b>高</b></td>
+    <td>97</td>
+    <td><code>cc::gfx::doBufferTextureCopy + 464</code><br/><span class="id">id: C4EdIm0vNvzjBfYmtcfrU</span></td>
+    <td>游戏脚本 + 引擎 GFX</td>
+    <td>纹理上传时源 buffer 为空，memmove 空指针。多由 JS SimpleTexture.uploadData 触发，部分经 WebSocket onMessage。EXC_BAD_ACCESS at 0x0。</td>
+    <td>uploadData 前校验指针与长度；异步回调时纹理是否已释放。与 copyBuffersToTexture / MessageQueue 合并看。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>13</td>
+    <td><b>低</b></td>
+    <td>94</td>
+    <td><code>UIKitCore + 944892（未符号化）</code><br/><span class="id">id: DQ7Vv5sOEO50YYZD1_3WBU</span></td>
+    <td>系统无符号归类</td>
+    <td>UIKit 未符号化偏移，系统归类落点。</td>
+    <td>不单独当根因。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>14</td>
+    <td><b>中</b></td>
+    <td>12</td>
+    <td><code>MessageQueue::MemoryAllocator::request + 56</code><br/><span class="id">id: BRQad5-bIyhG1MThaNZgNH</span></td>
+    <td>引擎消息队列分配</td>
+    <td>渲染 MessageQueue 向分配器要内存时崩溃，偏内存压力或命令积压。</td>
+    <td>与贴图异步上传、大命令积压一起看；对照 NO_CRASH_STACK。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>15</td>
+    <td><b>低</b></td>
+    <td>5</td>
+    <td><code>facebook::react::RCTNativeModule::invoke</code><br/><span class="id">id: vJuaisoH8r8dMcY9COkWX</span></td>
+    <td>RN/桥接残留</td>
+    <td>RCTNativeModule 调用时崩溃。量很小。</td>
+    <td>确认该版本是否仍含 RN 桥；量低可观察。</td>
+    <td></td>
+  </tr>
+</table>
+
+<h2 id="v1114_y">1.1.14 · Last Year</h2>
+<p class="note">设备数口径：DistributionInfo 版本拆分（可能不全）；本窗口仅列出 3 条，不足 15。前 3 合计 3（条目间可能有同一设备重复，仅作量级）。refresh=—</p>
+<p class="concl"><b>本版结论：</b>本版前排以系统归类或无栈为主，可归因业务点较少；先符号化或观察高优先级历史项。本表 Top 中，「强杀/进程已死还在上报」占设备数 <b>67%</b>（2/3）。</p>
+<table>
+  <tr>
+    <th style="width:28px">#</th>
+    <th style="width:40px">优先级</th>
+    <th style="width:52px">设备</th>
+    <th style="width:22%">Crash Point</th>
+    <th style="width:12%">类型 / 模块</th>
+    <th style="width:20%">实质原因</th>
+    <th>排查方向</th>
+    <th style="width:120px">说明</th>
+  </tr>
+  <tr class="p1">
+    <td>1</td>
+    <td><b>中</b></td>
+    <td>1</td>
+    <td><code>cc::Semaphore::wait() + 16</code><br/><span class="id">id: Dy6cyhTJizogQSegMX_WS5</span></td>
+    <td>引擎帧同步 / GFX</td>
+    <td>Root::frameMoveEnd 等待渲染/GPU 信号量异常（超时、未 signal、或前序 GFX 异常后同步态损坏）。链：Semaphore::wait → frameMoveEnd → js_cc_Root_frameMove。</td>
+    <td>先修贴图空 buffer，再观察本点；若仍高，查 frameMove 与进前后台 GPU 队列。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>2</td>
+    <td><b>低</b></td>
+    <td>1</td>
+    <td><code>UIEventFetcher threadMain + 420</code><br/><span class="id">id: DLv6v_kVaI3SezmMxhpnMD</span></td>
+    <td>系统归类落点</td>
+    <td>系统事件线程在 RunLoop/mach_msg 空闲等待时进程退出。EXC_CRASH(SIGSEGV)、codes 0；frame0 无游戏/Spine/GFX。Organizer 按该符号归类，业务根因不明确。</td>
+    <td>不宜当业务根因。优先观察高优先级项修复后是否下降。与 +408/+424 同家族。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>3</td>
+    <td><b>低</b></td>
+    <td>1</td>
+    <td><code>???: 0x0</code><br/><span class="id">id: CUI3RT1y7gVkeQebMSCEV6</span></td>
+    <td>未符号化 / 空指针归类</td>
+    <td>符号为 0x0，无法从 Organizer 名称还原业务帧。</td>
+    <td>抽本地符号化日志看真实 frame0；若与 Spine/GFX 重合则并入对应项。</td>
+    <td></td>
+  </tr>
+</table>
+
+<h2 id="v1115_y">1.1.15 · Last Year</h2>
+<p class="note">设备数口径：DistributionInfo 版本拆分（可能不全）；本窗口仅列出 12 条，不足 15。前 12 合计 1082（条目间可能有同一设备重复，仅作量级）。refresh=—</p>
+<p class="concl"><b>本版结论：</b>本版可归因主因：spine::Animation::binarySearch + 40（6）；cc::gfx::doBufferTextureCopy + 464（2）。本表 Top 中，「强杀/进程已死还在上报」占设备数 <b>88%</b>（951/1082）。</p>
+<table>
+  <tr>
+    <th style="width:28px">#</th>
+    <th style="width:40px">优先级</th>
+    <th style="width:52px">设备</th>
+    <th style="width:22%">Crash Point</th>
+    <th style="width:12%">类型 / 模块</th>
+    <th style="width:20%">实质原因</th>
+    <th>排查方向</th>
+    <th style="width:120px">说明</th>
+  </tr>
+  <tr class="p2">
+    <td>1</td>
+    <td><b>低</b></td>
+    <td>348</td>
+    <td><code>UIEventFetcher threadMain + 420</code><br/><span class="id">id: DLv6v_kVaI3SezmMxhpnMD</span></td>
+    <td>系统归类落点</td>
+    <td>系统事件线程在 RunLoop/mach_msg 空闲等待时进程退出。EXC_CRASH(SIGSEGV)、codes 0；frame0 无游戏/Spine/GFX。Organizer 按该符号归类，业务根因不明确。</td>
+    <td>不宜当业务根因。优先观察高优先级项修复后是否下降。与 +408/+424 同家族。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>2</td>
+    <td><b>低</b></td>
+    <td>326</td>
+    <td><code>NO_CRASH_STACK</code><br/><span class="id">id: CX4TR2FhT4q3kSZ6oesj63</span></td>
+    <td>无栈 / 被杀归类</td>
+    <td>无有效崩溃栈。常见 Jetsam、看门狗或系统杀进程，无法定位业务帧。</td>
+    <td>结合内存与是否进后台；不作首要代码修复。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>3</td>
+    <td><b>低</b></td>
+    <td>102</td>
+    <td><code>UIEventFetcher threadMain + 424</code><br/><span class="id">id: DdJJE5zcXIGxEtaa1cdix7</span></td>
+    <td>系统归类落点</td>
+    <td>与 +420 同家族（+424 vs +420）。EXC_CRASH(SIGSEGV)/codes 0。</td>
+    <td>同 UIEventFetcher 家族，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>4</td>
+    <td><b>低</b></td>
+    <td>91</td>
+    <td><code>???: 0x0</code><br/><span class="id">id: CUI3RT1y7gVkeQebMSCEV6</span></td>
+    <td>未符号化 / 空指针归类</td>
+    <td>符号为 0x0，无法从 Organizer 名称还原业务帧。</td>
+    <td>抽本地符号化日志看真实 frame0；若与 Spine/GFX 重合则并入对应项。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>5</td>
+    <td><b>低</b></td>
+    <td>71</td>
+    <td><code>UIKitCore: + -1（空符号）</code><br/><span class="id">id: DlmMpUlOi9xJldzoOvTvaq</span></td>
+    <td>系统无符号归类</td>
+    <td>Organizer 符号缺失。部分下载日志主线程实际是 Spine binarySearch，崩溃线程在系统侧。多为归类落点。</td>
+    <td>先符号化再判断；可能是 Spine/GFX 的错误归类，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>6</td>
+    <td><b>中</b></td>
+    <td>66</td>
+    <td><code>cc::Semaphore::wait() + 16</code><br/><span class="id">id: Dy6cyhTJizogQSegMX_WS5</span></td>
+    <td>引擎帧同步 / GFX</td>
+    <td>Root::frameMoveEnd 等待渲染/GPU 信号量异常（超时、未 signal、或前序 GFX 异常后同步态损坏）。链：Semaphore::wait → frameMoveEnd → js_cc_Root_frameMove。</td>
+    <td>先修贴图空 buffer，再观察本点；若仍高，查 frameMove 与进前后台 GPU 队列。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>7</td>
+    <td><b>低</b></td>
+    <td>36</td>
+    <td><code>UIKitCore + 4319260（未符号化）</code><br/><span class="id">id: DPajtsvUJB8g6HZIj2h3Yq</span></td>
+    <td>系统无符号归类</td>
+    <td>UIKit 未符号化偏移，与 UIEventFetcher / + -1 同类系统落点。</td>
+    <td>不单独当根因。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>8</td>
+    <td><b>低</b></td>
+    <td>16</td>
+    <td><code>JavaScriptCore scavenger_thread_main</code><br/><span class="id">id: U_6Nw6LDUNZPoXMRmrQSv</span></td>
+    <td>系统 JSC 回收线程</td>
+    <td>与另一 scavenger 点同类（偏移不同）。</td>
+    <td>同 JSC scavenger，不作为游戏主攻。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>9</td>
+    <td><b>低</b></td>
+    <td>16</td>
+    <td><code>LegacyThreadPool __thread_proxy</code><br/><span class="id">id: C8yeE1X02lKFmX1ZCXypT2</span></td>
+    <td>引擎后台线程池</td>
+    <td>Cocos LegacyThreadPool 工作线程崩溃。常与读文件/JSON/资源加载同现。</td>
+    <td>与 js_readJsonFile / FileUtils 一起查；线程退出时任务是否仍访问已销毁对象。</td>
+    <td></td>
+  </tr>
+  <tr class="p0">
+    <td>10</td>
+    <td><b>高</b></td>
+    <td>6</td>
+    <td><code>spine::Animation::binarySearch + 40</code><br/><span class="id">id: DYCtLsGQ9dTTZVtv86z1nb</span></td>
+    <td>游戏脚本 + 引擎 Spine</td>
+    <td>Spine 时间轴二分查找踩非法内存。常见空/损坏 frames，或 Skeleton/Animation 已释放仍 update。链：tick → js_cc_SkeletonAnimation_update → AnimationState::apply → TranslateTimeline → binarySearch（V8/jsb）。</td>
+    <td>节点销毁后是否仍 update；切场景是否未停动画；Spine 资源是否空/损坏。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>11</td>
+    <td><b>低</b></td>
+    <td>2</td>
+    <td><code>__CFRunLoopServiceMachPort + 160</code><br/><span class="id">id: Dd3gWlREIS0UracQ_tDIJ</span></td>
+    <td>系统 / 进程终止归类</td>
+    <td>主线程 RunLoop 收 Mach 消息时进程退出。部分样本为 0xdead10cc（后台仍持锁被杀）。</td>
+    <td>进后台是否未关 SQLite/文件句柄。次要项。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p0">
+    <td>12</td>
+    <td><b>高</b></td>
+    <td>2</td>
+    <td><code>cc::gfx::doBufferTextureCopy + 464</code><br/><span class="id">id: C4EdIm0vNvzjBfYmtcfrU</span></td>
+    <td>游戏脚本 + 引擎 GFX</td>
+    <td>纹理上传时源 buffer 为空，memmove 空指针。多由 JS SimpleTexture.uploadData 触发，部分经 WebSocket onMessage。EXC_BAD_ACCESS at 0x0。</td>
+    <td>uploadData 前校验指针与长度；异步回调时纹理是否已释放。与 copyBuffersToTexture / MessageQueue 合并看。</td>
+    <td></td>
+  </tr>
+</table>
+
+<h2 id="v1116_y">1.1.16 · Last Year</h2>
+<p class="note">设备数口径：DistributionInfo 版本拆分（可能不全）；本窗口仅列出 11 条，不足 15。前 11 合计 13094（条目间可能有同一设备重复，仅作量级）。refresh=—</p>
+<p class="concl"><b>本版结论：</b>本版可归因主因：spine::Animation::binarySearch + 40（60）。本表 Top 中，「强杀/进程已死还在上报」占设备数 <b>88%</b>（11497/13094）。</p>
+<table>
+  <tr>
+    <th style="width:28px">#</th>
+    <th style="width:40px">优先级</th>
+    <th style="width:52px">设备</th>
+    <th style="width:22%">Crash Point</th>
+    <th style="width:12%">类型 / 模块</th>
+    <th style="width:20%">实质原因</th>
+    <th>排查方向</th>
+    <th style="width:120px">说明</th>
+  </tr>
+  <tr class="p2">
+    <td>1</td>
+    <td><b>低</b></td>
+    <td>5489</td>
+    <td><code>UIEventFetcher threadMain + 420</code><br/><span class="id">id: DLv6v_kVaI3SezmMxhpnMD</span></td>
+    <td>系统归类落点</td>
+    <td>系统事件线程在 RunLoop/mach_msg 空闲等待时进程退出。EXC_CRASH(SIGSEGV)、codes 0；frame0 无游戏/Spine/GFX。Organizer 按该符号归类，业务根因不明确。</td>
+    <td>不宜当业务根因。优先观察高优先级项修复后是否下降。与 +408/+424 同家族。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>2</td>
+    <td><b>中</b></td>
+    <td>2084</td>
+    <td><code>cc::Semaphore::wait() + 16</code><br/><span class="id">id: Dy6cyhTJizogQSegMX_WS5</span></td>
+    <td>引擎帧同步 / GFX</td>
+    <td>Root::frameMoveEnd 等待渲染/GPU 信号量异常（超时、未 signal、或前序 GFX 异常后同步态损坏）。链：Semaphore::wait → frameMoveEnd → js_cc_Root_frameMove。</td>
+    <td>先修贴图空 buffer，再观察本点；若仍高，查 frameMove 与进前后台 GPU 队列。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>3</td>
+    <td><b>低</b></td>
+    <td>1792</td>
+    <td><code>UIKitCore: + -1（空符号）</code><br/><span class="id">id: DlmMpUlOi9xJldzoOvTvaq</span></td>
+    <td>系统无符号归类</td>
+    <td>Organizer 符号缺失。部分下载日志主线程实际是 Spine binarySearch，崩溃线程在系统侧。多为归类落点。</td>
+    <td>先符号化再判断；可能是 Spine/GFX 的错误归类，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>4</td>
+    <td><b>低</b></td>
+    <td>1360</td>
+    <td><code>???: 0x0</code><br/><span class="id">id: CUI3RT1y7gVkeQebMSCEV6</span></td>
+    <td>未符号化 / 空指针归类</td>
+    <td>符号为 0x0，无法从 Organizer 名称还原业务帧。</td>
+    <td>抽本地符号化日志看真实 frame0；若与 Spine/GFX 重合则并入对应项。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>5</td>
+    <td><b>低</b></td>
+    <td>1053</td>
+    <td><code>UIEventFetcher threadMain + 424</code><br/><span class="id">id: DdJJE5zcXIGxEtaa1cdix7</span></td>
+    <td>系统归类落点</td>
+    <td>与 +420 同家族（+424 vs +420）。EXC_CRASH(SIGSEGV)/codes 0。</td>
+    <td>同 UIEventFetcher 家族，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>6</td>
+    <td><b>低</b></td>
+    <td>644</td>
+    <td><code>NO_CRASH_STACK</code><br/><span class="id">id: CX4TR2FhT4q3kSZ6oesj63</span></td>
+    <td>无栈 / 被杀归类</td>
+    <td>无有效崩溃栈。常见 Jetsam、看门狗或系统杀进程，无法定位业务帧。</td>
+    <td>结合内存与是否进后台；不作首要代码修复。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>7</td>
+    <td><b>低</b></td>
+    <td>435</td>
+    <td><code>UIKitCore + 4319260（未符号化）</code><br/><span class="id">id: DPajtsvUJB8g6HZIj2h3Yq</span></td>
+    <td>系统无符号归类</td>
+    <td>UIKit 未符号化偏移，与 UIEventFetcher / + -1 同类系统落点。</td>
+    <td>不单独当根因。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>8</td>
+    <td><b>低</b></td>
+    <td>159</td>
+    <td><code>LegacyThreadPool __thread_proxy</code><br/><span class="id">id: C8yeE1X02lKFmX1ZCXypT2</span></td>
+    <td>引擎后台线程池</td>
+    <td>Cocos LegacyThreadPool 工作线程崩溃。常与读文件/JSON/资源加载同现。</td>
+    <td>与 js_readJsonFile / FileUtils 一起查；线程退出时任务是否仍访问已销毁对象。</td>
+    <td></td>
+  </tr>
+  <tr class="p0">
+    <td>9</td>
+    <td><b>高</b></td>
+    <td>60</td>
+    <td><code>spine::Animation::binarySearch + 40</code><br/><span class="id">id: DYCtLsGQ9dTTZVtv86z1nb</span></td>
+    <td>游戏脚本 + 引擎 Spine</td>
+    <td>Spine 时间轴二分查找踩非法内存。常见空/损坏 frames，或 Skeleton/Animation 已释放仍 update。链：tick → js_cc_SkeletonAnimation_update → AnimationState::apply → TranslateTimeline → binarySearch（V8/jsb）。</td>
+    <td>节点销毁后是否仍 update；切场景是否未停动画；Spine 资源是否空/损坏。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>10</td>
+    <td><b>低</b></td>
+    <td>16</td>
+    <td><code>JavaScriptCore scavenger_thread_main</code><br/><span class="id">id: U_6Nw6LDUNZPoXMRmrQSv</span></td>
+    <td>系统 JSC 回收线程</td>
+    <td>与另一 scavenger 点同类（偏移不同）。</td>
+    <td>同 JSC scavenger，不作为游戏主攻。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>11</td>
+    <td><b>低</b></td>
+    <td>2</td>
+    <td><code>facebook::react::RCTNativeModule::invoke</code><br/><span class="id">id: vJuaisoH8r8dMcY9COkWX</span></td>
+    <td>RN/桥接残留</td>
+    <td>RCTNativeModule 调用时崩溃。量很小。</td>
+    <td>确认该版本是否仍含 RN 桥；量低可观察。</td>
+    <td></td>
+  </tr>
+</table>
+
+<h2 id="v1117_y">1.1.17 · Last Year</h2>
+<p class="note">设备数口径：DistributionInfo 版本拆分（可能不全）；本窗口仅列出 9 条，不足 15。前 9 合计 6775（条目间可能有同一设备重复，仅作量级）。refresh=—</p>
+<p class="concl"><b>本版结论：</b>本版可归因主因：CCMTLCommandBuffer::copyBuffersToTexture（273）；spine::Animation::binarySearch + 40（254）。本表 Top 中，「强杀/进程已死还在上报」占设备数 <b>86%</b>（5847/6775）。</p>
+<table>
+  <tr>
+    <th style="width:28px">#</th>
+    <th style="width:40px">优先级</th>
+    <th style="width:52px">设备</th>
+    <th style="width:22%">Crash Point</th>
+    <th style="width:12%">类型 / 模块</th>
+    <th style="width:20%">实质原因</th>
+    <th>排查方向</th>
+    <th style="width:120px">说明</th>
+  </tr>
+  <tr class="p2">
+    <td>1</td>
+    <td><b>低</b></td>
+    <td>4485</td>
+    <td><code>UIEventFetcher threadMain + 420</code><br/><span class="id">id: DLv6v_kVaI3SezmMxhpnMD</span></td>
+    <td>系统归类落点</td>
+    <td>系统事件线程在 RunLoop/mach_msg 空闲等待时进程退出。EXC_CRASH(SIGSEGV)、codes 0；frame0 无游戏/Spine/GFX。Organizer 按该符号归类，业务根因不明确。</td>
+    <td>不宜当业务根因。优先观察高优先级项修复后是否下降。与 +408/+424 同家族。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>2</td>
+    <td><b>低</b></td>
+    <td>521</td>
+    <td><code>NO_CRASH_STACK</code><br/><span class="id">id: CX4TR2FhT4q3kSZ6oesj63</span></td>
+    <td>无栈 / 被杀归类</td>
+    <td>无有效崩溃栈。常见 Jetsam、看门狗或系统杀进程，无法定位业务帧。</td>
+    <td>结合内存与是否进后台；不作首要代码修复。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>3</td>
+    <td><b>低</b></td>
+    <td>392</td>
+    <td><code>???: 0x0</code><br/><span class="id">id: CUI3RT1y7gVkeQebMSCEV6</span></td>
+    <td>未符号化 / 空指针归类</td>
+    <td>符号为 0x0，无法从 Organizer 名称还原业务帧。</td>
+    <td>抽本地符号化日志看真实 frame0；若与 Spine/GFX 重合则并入对应项。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>4</td>
+    <td><b>低</b></td>
+    <td>358</td>
+    <td><code>UIKitCore: + -1（空符号）</code><br/><span class="id">id: DlmMpUlOi9xJldzoOvTvaq</span></td>
+    <td>系统无符号归类</td>
+    <td>Organizer 符号缺失。部分下载日志主线程实际是 Spine binarySearch，崩溃线程在系统侧。多为归类落点。</td>
+    <td>先符号化再判断；可能是 Spine/GFX 的错误归类，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>5</td>
+    <td><b>中</b></td>
+    <td>338</td>
+    <td><code>cc::Semaphore::wait() + 16</code><br/><span class="id">id: Dy6cyhTJizogQSegMX_WS5</span></td>
+    <td>引擎帧同步 / GFX</td>
+    <td>Root::frameMoveEnd 等待渲染/GPU 信号量异常（超时、未 signal、或前序 GFX 异常后同步态损坏）。链：Semaphore::wait → frameMoveEnd → js_cc_Root_frameMove。</td>
+    <td>先修贴图空 buffer，再观察本点；若仍高，查 frameMove 与进前后台 GPU 队列。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p0">
+    <td>6</td>
+    <td><b>高</b></td>
+    <td>273</td>
+    <td><code>CCMTLCommandBuffer::copyBuffersToTexture</code><br/><span class="id">id: Bz6yzyrU-xMa3LyYrx_kHM</span></td>
+    <td>引擎 GFX/Metal</td>
+    <td>与 doBufferTextureCopy 同族：MessageQueue 消费线程上 Metal 路径 buffer→texture 拷贝读到空/野指针。</td>
+    <td>与 doBufferTextureCopy 一并修；贴图修复后观察 Semaphore 是否下降。</td>
+    <td></td>
+  </tr>
+  <tr class="p0">
+    <td>7</td>
+    <td><b>高</b></td>
+    <td>254</td>
+    <td><code>spine::Animation::binarySearch + 40</code><br/><span class="id">id: DYCtLsGQ9dTTZVtv86z1nb</span></td>
+    <td>游戏脚本 + 引擎 Spine</td>
+    <td>Spine 时间轴二分查找踩非法内存。常见空/损坏 frames，或 Skeleton/Animation 已释放仍 update。链：tick → js_cc_SkeletonAnimation_update → AnimationState::apply → TranslateTimeline → binarySearch（V8/jsb）。</td>
+    <td>节点销毁后是否仍 update；切场景是否未停动画；Spine 资源是否空/损坏。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>8</td>
+    <td><b>低</b></td>
+    <td>145</td>
+    <td><code>UIEventFetcher threadMain + 424</code><br/><span class="id">id: DdJJE5zcXIGxEtaa1cdix7</span></td>
+    <td>系统归类落点</td>
+    <td>与 +420 同家族（+424 vs +420）。EXC_CRASH(SIGSEGV)/codes 0。</td>
+    <td>同 UIEventFetcher 家族，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>9</td>
+    <td><b>低</b></td>
+    <td>9</td>
+    <td><code>facebook::react::RCTNativeModule::invoke</code><br/><span class="id">id: vJuaisoH8r8dMcY9COkWX</span></td>
+    <td>RN/桥接残留</td>
+    <td>RCTNativeModule 调用时崩溃。量很小。</td>
+    <td>确认该版本是否仍含 RN 桥；量低可观察。</td>
+    <td></td>
+  </tr>
+</table>
+
+<h2 id="v1118_y">1.1.18 · Last Year</h2>
+<p class="note">设备数口径：ListablePoints 按版本过滤。前 15 合计 11978（条目间可能有同一设备重复，仅作量级）。refresh=2026-08-04T05:43:22Z</p>
+<p class="concl"><b>本版结论：</b>本版可归因主因：spine::Animation::binarySearch + 40（2184）；CCMTLCommandBuffer::copyBuffersToTexture（905）；cc::gfx::doBufferTextureCopy + 464（871）。本表 Top 中，「强杀/进程已死还在上报」占设备数 <b>42%</b>（5011/11978）。</p>
+<table>
+  <tr>
+    <th style="width:28px">#</th>
+    <th style="width:40px">优先级</th>
+    <th style="width:52px">设备</th>
+    <th style="width:22%">Crash Point</th>
+    <th style="width:12%">类型 / 模块</th>
+    <th style="width:20%">实质原因</th>
+    <th>排查方向</th>
+    <th style="width:120px">说明</th>
+  </tr>
+  <tr class="p0">
+    <td>1</td>
+    <td><b>高</b></td>
+    <td>2184</td>
+    <td><code>spine::Animation::binarySearch + 40</code><br/><span class="id">id: DYCtLsGQ9dTTZVtv86z1nb</span></td>
+    <td>游戏脚本 + 引擎 Spine</td>
+    <td>Spine 时间轴二分查找踩非法内存。常见空/损坏 frames，或 Skeleton/Animation 已释放仍 update。链：tick → js_cc_SkeletonAnimation_update → AnimationState::apply → TranslateTimeline → binarySearch（V8/jsb）。</td>
+    <td>节点销毁后是否仍 update；切场景是否未停动画；Spine 资源是否空/损坏。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>2</td>
+    <td><b>低</b></td>
+    <td>2073</td>
+    <td><code>UIEventFetcher threadMain + 420</code><br/><span class="id">id: DLv6v_kVaI3SezmMxhpnMD</span></td>
+    <td>系统归类落点</td>
+    <td>系统事件线程在 RunLoop/mach_msg 空闲等待时进程退出。EXC_CRASH(SIGSEGV)、codes 0；frame0 无游戏/Spine/GFX。Organizer 按该符号归类，业务根因不明确。</td>
+    <td>不宜当业务根因。优先观察高优先级项修复后是否下降。与 +408/+424 同家族。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>3</td>
+    <td><b>中</b></td>
+    <td>1218</td>
+    <td><code>basic_string&lt;char16_t&gt;::__grow_by</code><br/><span class="id">id: BXUcwRHzih5eMqTMyZrVNp</span></td>
+    <td>游戏脚本 + 引擎字符串</td>
+    <td>js_readJsonFile 后台读文件后 UTF8→UTF16 扩容失败并 abort。链：__grow_by → StringUtils::UTF8ToUTF16 → js_readJsonFile → LegacyThreadPool。</td>
+    <td>坏文件、超大文件、非 UTF8；js_readJsonFile 边界处理。</td>
+    <td></td>
+  </tr>
+  <tr class="p1">
+    <td>4</td>
+    <td><b>中</b></td>
+    <td>1100</td>
+    <td><code>cc::Semaphore::wait() + 16</code><br/><span class="id">id: Dy6cyhTJizogQSegMX_WS5</span></td>
+    <td>引擎帧同步 / GFX</td>
+    <td>Root::frameMoveEnd 等待渲染/GPU 信号量异常（超时、未 signal、或前序 GFX 异常后同步态损坏）。链：Semaphore::wait → frameMoveEnd → js_cc_Root_frameMove。</td>
+    <td>先修贴图空 buffer，再观察本点；若仍高，查 frameMove 与进前后台 GPU 队列。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p0">
+    <td>5</td>
+    <td><b>高</b></td>
+    <td>905</td>
+    <td><code>CCMTLCommandBuffer::copyBuffersToTexture</code><br/><span class="id">id: Bz6yzyrU-xMa3LyYrx_kHM</span></td>
+    <td>引擎 GFX/Metal</td>
+    <td>与 doBufferTextureCopy 同族：MessageQueue 消费线程上 Metal 路径 buffer→texture 拷贝读到空/野指针。</td>
+    <td>与 doBufferTextureCopy 一并修；贴图修复后观察 Semaphore 是否下降。</td>
+    <td></td>
+  </tr>
+  <tr class="p0">
+    <td>6</td>
+    <td><b>高</b></td>
+    <td>871</td>
+    <td><code>cc::gfx::doBufferTextureCopy + 464</code><br/><span class="id">id: C4EdIm0vNvzjBfYmtcfrU</span></td>
+    <td>游戏脚本 + 引擎 GFX</td>
+    <td>纹理上传时源 buffer 为空，memmove 空指针。多由 JS SimpleTexture.uploadData 触发，部分经 WebSocket onMessage。EXC_BAD_ACCESS at 0x0。</td>
+    <td>uploadData 前校验指针与长度；异步回调时纹理是否已释放。与 copyBuffersToTexture / MessageQueue 合并看。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>7</td>
+    <td><b>低</b></td>
+    <td>659</td>
+    <td><code>???: 0x0</code><br/><span class="id">id: CUI3RT1y7gVkeQebMSCEV6</span></td>
+    <td>未符号化 / 空指针归类</td>
+    <td>符号为 0x0，无法从 Organizer 名称还原业务帧。</td>
+    <td>抽本地符号化日志看真实 frame0；若与 Spine/GFX 重合则并入对应项。</td>
+    <td></td>
+  </tr>
+  <tr class="p0">
+    <td>8</td>
+    <td><b>高</b></td>
+    <td>444</td>
+    <td><code>cc::MessageQueue::consumerThreadLoop + 316</code><br/><span class="id">id: Dc6Nmaa19OUUJ5IFyUgKn0</span></td>
+    <td>引擎消息队列</td>
+    <td>Cocos 后台 MessageQueue 消费循环内崩溃；与 copyBuffersToTexture / doBufferTextureCopy 同属渲染异步管线。</td>
+    <td>与贴图上传两条合并分析。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>9</td>
+    <td><b>低</b></td>
+    <td>402</td>
+    <td><code>__CFRunLoopServiceMachPort + 160</code><br/><span class="id">id: Dd3gWlREIS0UracQ_tDIJ</span></td>
+    <td>系统 / 进程终止归类</td>
+    <td>主线程 RunLoop 收 Mach 消息时进程退出。部分样本为 0xdead10cc（后台仍持锁被杀）。</td>
+    <td>进后台是否未关 SQLite/文件句柄。次要项。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>10</td>
+    <td><b>低</b></td>
+    <td>386</td>
+    <td><code>UIKitCore + 4319260（未符号化）</code><br/><span class="id">id: DPajtsvUJB8g6HZIj2h3Yq</span></td>
+    <td>系统无符号归类</td>
+    <td>UIKit 未符号化偏移，与 UIEventFetcher / + -1 同类系统落点。</td>
+    <td>不单独当根因。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>11</td>
+    <td><b>低</b></td>
+    <td>382</td>
+    <td><code>UIEventFetcher threadMain + 424</code><br/><span class="id">id: DdJJE5zcXIGxEtaa1cdix7</span></td>
+    <td>系统归类落点</td>
+    <td>与 +420 同家族（+424 vs +420）。EXC_CRASH(SIGSEGV)/codes 0。</td>
+    <td>同 UIEventFetcher 家族，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>12</td>
+    <td><b>中</b></td>
+    <td>364</td>
+    <td><code>cc::FileUtils::getContents + 220</code><br/><span class="id">id: CCdk7-omeRcUj9GXoljrfw</span></td>
+    <td>引擎文件读取</td>
+    <td>读文件到 ResizableBuffer 时崩溃。常与热更/本地 JSON、坏路径或并发读有关。</td>
+    <td>与 js_readJsonFile / UTF 转换一起查；文件是否缺失、超大、路径非法。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>13</td>
+    <td><b>低</b></td>
+    <td>359</td>
+    <td><code>NO_CRASH_STACK</code><br/><span class="id">id: CX4TR2FhT4q3kSZ6oesj63</span></td>
+    <td>无栈 / 被杀归类</td>
+    <td>无有效崩溃栈。常见 Jetsam、看门狗或系统杀进程，无法定位业务帧。</td>
+    <td>结合内存与是否进后台；不作首要代码修复。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>14</td>
+    <td><b>低</b></td>
+    <td>322</td>
+    <td><code>LegacyThreadPool __thread_proxy</code><br/><span class="id">id: C8yeE1X02lKFmX1ZCXypT2</span></td>
+    <td>引擎后台线程池</td>
+    <td>Cocos LegacyThreadPool 工作线程崩溃。常与读文件/JSON/资源加载同现。</td>
+    <td>与 js_readJsonFile / FileUtils 一起查；线程退出时任务是否仍访问已销毁对象。</td>
+    <td></td>
+  </tr>
+  <tr class="p1">
+    <td>15</td>
+    <td><b>中</b></td>
+    <td>309</td>
+    <td><code>MessageQueue::MemoryAllocator::request + 56</code><br/><span class="id">id: BRQad5-bIyhG1MThaNZgNH</span></td>
+    <td>引擎消息队列分配</td>
+    <td>渲染 MessageQueue 向分配器要内存时崩溃，偏内存压力或命令积压。</td>
+    <td>与贴图异步上传、大命令积压一起看；对照 NO_CRASH_STACK。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+</table>
+
+<h2 id="v1119_y">1.1.19 · Last Year</h2>
+<p class="note">设备数口径：DistributionInfo 版本拆分（可能不全）；本窗口仅列出 6 条，不足 15。前 6 合计 8709（条目间可能有同一设备重复，仅作量级）。refresh=—</p>
+<p class="concl"><b>本版结论：</b>本版可归因主因：spine::Animation::binarySearch + 40（3711）；cc::gfx::doBufferTextureCopy + 464（1502）；CCMTLCommandBuffer::copyBuffersToTexture（1482）。本表 Top 中，「强杀/进程已死还在上报」占设备数 <b>23%</b>（2013/8709）。</p>
+<table>
+  <tr>
+    <th style="width:28px">#</th>
+    <th style="width:40px">优先级</th>
+    <th style="width:52px">设备</th>
+    <th style="width:22%">Crash Point</th>
+    <th style="width:12%">类型 / 模块</th>
+    <th style="width:20%">实质原因</th>
+    <th>排查方向</th>
+    <th style="width:120px">说明</th>
+  </tr>
+  <tr class="p0">
+    <td>1</td>
+    <td><b>高</b></td>
+    <td>3711</td>
+    <td><code>spine::Animation::binarySearch + 40</code><br/><span class="id">id: DYCtLsGQ9dTTZVtv86z1nb</span></td>
+    <td>游戏脚本 + 引擎 Spine</td>
+    <td>Spine 时间轴二分查找踩非法内存。常见空/损坏 frames，或 Skeleton/Animation 已释放仍 update。链：tick → js_cc_SkeletonAnimation_update → AnimationState::apply → TranslateTimeline → binarySearch（V8/jsb）。</td>
+    <td>节点销毁后是否仍 update；切场景是否未停动画；Spine 资源是否空/损坏。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>2</td>
+    <td><b>低</b></td>
+    <td>1972</td>
+    <td><code>UIEventFetcher threadMain + 420</code><br/><span class="id">id: DLv6v_kVaI3SezmMxhpnMD</span></td>
+    <td>系统归类落点</td>
+    <td>系统事件线程在 RunLoop/mach_msg 空闲等待时进程退出。EXC_CRASH(SIGSEGV)、codes 0；frame0 无游戏/Spine/GFX。Organizer 按该符号归类，业务根因不明确。</td>
+    <td>不宜当业务根因。优先观察高优先级项修复后是否下降。与 +408/+424 同家族。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p0">
+    <td>3</td>
+    <td><b>高</b></td>
+    <td>1502</td>
+    <td><code>cc::gfx::doBufferTextureCopy + 464</code><br/><span class="id">id: C4EdIm0vNvzjBfYmtcfrU</span></td>
+    <td>游戏脚本 + 引擎 GFX</td>
+    <td>纹理上传时源 buffer 为空，memmove 空指针。多由 JS SimpleTexture.uploadData 触发，部分经 WebSocket onMessage。EXC_BAD_ACCESS at 0x0。</td>
+    <td>uploadData 前校验指针与长度；异步回调时纹理是否已释放。与 copyBuffersToTexture / MessageQueue 合并看。</td>
+    <td></td>
+  </tr>
+  <tr class="p0">
+    <td>4</td>
+    <td><b>高</b></td>
+    <td>1482</td>
+    <td><code>CCMTLCommandBuffer::copyBuffersToTexture</code><br/><span class="id">id: Bz6yzyrU-xMa3LyYrx_kHM</span></td>
+    <td>引擎 GFX/Metal</td>
+    <td>与 doBufferTextureCopy 同族：MessageQueue 消费线程上 Metal 路径 buffer→texture 拷贝读到空/野指针。</td>
+    <td>与 doBufferTextureCopy 一并修；贴图修复后观察 Semaphore 是否下降。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>5</td>
+    <td><b>低</b></td>
+    <td>41</td>
+    <td><code>UIKitCore: + -1（空符号）</code><br/><span class="id">id: DlmMpUlOi9xJldzoOvTvaq</span></td>
+    <td>系统无符号归类</td>
+    <td>Organizer 符号缺失。部分下载日志主线程实际是 Spine binarySearch，崩溃线程在系统侧。多为归类落点。</td>
+    <td>先符号化再判断；可能是 Spine/GFX 的错误归类，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>6</td>
+    <td><b>低</b></td>
+    <td>1</td>
+    <td><code>facebook::react::RCTNativeModule::invoke</code><br/><span class="id">id: vJuaisoH8r8dMcY9COkWX</span></td>
+    <td>RN/桥接残留</td>
+    <td>RCTNativeModule 调用时崩溃。量很小。</td>
+    <td>确认该版本是否仍含 RN 桥；量低可观察。</td>
+    <td></td>
+  </tr>
+</table>
+
+<h2 id="v1119_w">1.1.19 · Last Two Weeks</h2>
+<p class="note">设备数口径：DistributionInfo 版本拆分（可能不全）；本窗口仅列出 6 条，不足 15。前 6 合计 7703（条目间可能有同一设备重复，仅作量级）。refresh=—</p>
+<p class="concl"><b>本版结论：</b>本版可归因主因：spine::Animation::binarySearch + 40（3240）；CCMTLCommandBuffer::copyBuffersToTexture（1482）；cc::gfx::doBufferTextureCopy + 464（1213）。本表 Top 中，「强杀/进程已死还在上报」占设备数 <b>23%</b>（1767/7703）。</p>
+<table>
+  <tr>
+    <th style="width:28px">#</th>
+    <th style="width:40px">优先级</th>
+    <th style="width:52px">设备</th>
+    <th style="width:22%">Crash Point</th>
+    <th style="width:12%">类型 / 模块</th>
+    <th style="width:20%">实质原因</th>
+    <th>排查方向</th>
+    <th style="width:120px">说明</th>
+  </tr>
+  <tr class="p0">
+    <td>1</td>
+    <td><b>高</b></td>
+    <td>3240</td>
+    <td><code>spine::Animation::binarySearch + 40</code><br/><span class="id">id: DYCtLsGQ9dTTZVtv86z1nb</span></td>
+    <td>游戏脚本 + 引擎 Spine</td>
+    <td>Spine 时间轴二分查找踩非法内存。常见空/损坏 frames，或 Skeleton/Animation 已释放仍 update。链：tick → js_cc_SkeletonAnimation_update → AnimationState::apply → TranslateTimeline → binarySearch（V8/jsb）。</td>
+    <td>节点销毁后是否仍 update；切场景是否未停动画；Spine 资源是否空/损坏。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>2</td>
+    <td><b>低</b></td>
+    <td>1733</td>
+    <td><code>UIEventFetcher threadMain + 420</code><br/><span class="id">id: DLv6v_kVaI3SezmMxhpnMD</span></td>
+    <td>系统归类落点</td>
+    <td>系统事件线程在 RunLoop/mach_msg 空闲等待时进程退出。EXC_CRASH(SIGSEGV)、codes 0；frame0 无游戏/Spine/GFX。Organizer 按该符号归类，业务根因不明确。</td>
+    <td>不宜当业务根因。优先观察高优先级项修复后是否下降。与 +408/+424 同家族。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p0">
+    <td>3</td>
+    <td><b>高</b></td>
+    <td>1482</td>
+    <td><code>CCMTLCommandBuffer::copyBuffersToTexture</code><br/><span class="id">id: Bz6yzyrU-xMa3LyYrx_kHM</span></td>
+    <td>引擎 GFX/Metal</td>
+    <td>与 doBufferTextureCopy 同族：MessageQueue 消费线程上 Metal 路径 buffer→texture 拷贝读到空/野指针。</td>
+    <td>与 doBufferTextureCopy 一并修；贴图修复后观察 Semaphore 是否下降。</td>
+    <td></td>
+  </tr>
+  <tr class="p0">
+    <td>4</td>
+    <td><b>高</b></td>
+    <td>1213</td>
+    <td><code>cc::gfx::doBufferTextureCopy + 464</code><br/><span class="id">id: C4EdIm0vNvzjBfYmtcfrU</span></td>
+    <td>游戏脚本 + 引擎 GFX</td>
+    <td>纹理上传时源 buffer 为空，memmove 空指针。多由 JS SimpleTexture.uploadData 触发，部分经 WebSocket onMessage。EXC_BAD_ACCESS at 0x0。</td>
+    <td>uploadData 前校验指针与长度；异步回调时纹理是否已释放。与 copyBuffersToTexture / MessageQueue 合并看。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>5</td>
+    <td><b>低</b></td>
+    <td>34</td>
+    <td><code>UIKitCore: + -1（空符号）</code><br/><span class="id">id: DlmMpUlOi9xJldzoOvTvaq</span></td>
+    <td>系统无符号归类</td>
+    <td>Organizer 符号缺失。部分下载日志主线程实际是 Spine binarySearch，崩溃线程在系统侧。多为归类落点。</td>
+    <td>先符号化再判断；可能是 Spine/GFX 的错误归类，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>6</td>
+    <td><b>低</b></td>
+    <td>1</td>
+    <td><code>facebook::react::RCTNativeModule::invoke</code><br/><span class="id">id: vJuaisoH8r8dMcY9COkWX</span></td>
+    <td>RN/桥接残留</td>
+    <td>RCTNativeModule 调用时崩溃。量很小。</td>
+    <td>确认该版本是否仍含 RN 桥；量低可观察。</td>
+    <td></td>
+  </tr>
+</table>
+
+<h2 id="v1120_w">1.1.20 · Last Two Weeks</h2>
+<p class="note">设备数口径：ListablePoints 按版本过滤。前 15 合计 13142（条目间可能有同一设备重复，仅作量级）。refresh=2026-08-13T09:59:07Z</p>
+<p class="concl"><b>本版结论：</b>本版可归因主因：spine::Animation::binarySearch + 40（3767）；cc::gfx::doBufferTextureCopy + 464（957）；CCMTLCommandBuffer::copyBuffersToTexture（928）。本表 Top 中，「强杀/进程已死还在上报」占设备数 <b>43%</b>（5670/13142）。</p>
+<table>
+  <tr>
+    <th style="width:28px">#</th>
+    <th style="width:40px">优先级</th>
+    <th style="width:52px">设备</th>
+    <th style="width:22%">Crash Point</th>
+    <th style="width:12%">类型 / 模块</th>
+    <th style="width:20%">实质原因</th>
+    <th>排查方向</th>
+    <th style="width:120px">说明</th>
+  </tr>
+  <tr class="p0">
+    <td>1</td>
+    <td><b>高</b></td>
+    <td>3767</td>
+    <td><code>spine::Animation::binarySearch + 40</code><br/><span class="id">id: DYCtLsGQ9dTTZVtv86z1nb</span></td>
+    <td>游戏脚本 + 引擎 Spine</td>
+    <td>Spine 时间轴二分查找踩非法内存。常见空/损坏 frames，或 Skeleton/Animation 已释放仍 update。链：tick → js_cc_SkeletonAnimation_update → AnimationState::apply → TranslateTimeline → binarySearch（V8/jsb）。</td>
+    <td>节点销毁后是否仍 update；切场景是否未停动画；Spine 资源是否空/损坏。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>2</td>
+    <td><b>低</b></td>
+    <td>1916</td>
+    <td><code>UIEventFetcher threadMain + 420</code><br/><span class="id">id: DLv6v_kVaI3SezmMxhpnMD</span></td>
+    <td>系统归类落点</td>
+    <td>系统事件线程在 RunLoop/mach_msg 空闲等待时进程退出。EXC_CRASH(SIGSEGV)、codes 0；frame0 无游戏/Spine/GFX。Organizer 按该符号归类，业务根因不明确。</td>
+    <td>不宜当业务根因。优先观察高优先级项修复后是否下降。与 +408/+424 同家族。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p0">
+    <td>3</td>
+    <td><b>高</b></td>
+    <td>957</td>
+    <td><code>cc::gfx::doBufferTextureCopy + 464</code><br/><span class="id">id: C4EdIm0vNvzjBfYmtcfrU</span></td>
+    <td>游戏脚本 + 引擎 GFX</td>
+    <td>纹理上传时源 buffer 为空，memmove 空指针。多由 JS SimpleTexture.uploadData 触发，部分经 WebSocket onMessage。EXC_BAD_ACCESS at 0x0。</td>
+    <td>uploadData 前校验指针与长度；异步回调时纹理是否已释放。与 copyBuffersToTexture / MessageQueue 合并看。</td>
+    <td></td>
+  </tr>
+  <tr class="p1">
+    <td>4</td>
+    <td><b>中</b></td>
+    <td>940</td>
+    <td><code>cc::Semaphore::wait() + 16</code><br/><span class="id">id: Dy6cyhTJizogQSegMX_WS5</span></td>
+    <td>引擎帧同步 / GFX</td>
+    <td>Root::frameMoveEnd 等待渲染/GPU 信号量异常（超时、未 signal、或前序 GFX 异常后同步态损坏）。链：Semaphore::wait → frameMoveEnd → js_cc_Root_frameMove。</td>
+    <td>先修贴图空 buffer，再观察本点；若仍高，查 frameMove 与进前后台 GPU 队列。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p0">
+    <td>5</td>
+    <td><b>高</b></td>
+    <td>928</td>
+    <td><code>CCMTLCommandBuffer::copyBuffersToTexture</code><br/><span class="id">id: Bz6yzyrU-xMa3LyYrx_kHM</span></td>
+    <td>引擎 GFX/Metal</td>
+    <td>与 doBufferTextureCopy 同族：MessageQueue 消费线程上 Metal 路径 buffer→texture 拷贝读到空/野指针。</td>
+    <td>与 doBufferTextureCopy 一并修；贴图修复后观察 Semaphore 是否下降。</td>
+    <td></td>
+  </tr>
+  <tr class="p1">
+    <td>6</td>
+    <td><b>中</b></td>
+    <td>746</td>
+    <td><code>SMHTTPRequestSerializer requestWithMethod + 272</code><br/><span class="id">id: BvsISEUL6DI9hO8mClzYrX</span></td>
+    <td>App ObjC 网络 + 广告竞价回传</td>
+    <td>SIGABRT：释放非法 CFString（POINTER_BEING_FREED_WAS_NOT_ALLOCATED）。1.1.21 样本：AnyThink 激励视频 bid loss → Wind/Sigmob sendLossNotification → SMNetworkManager GET → SMHTTPRequestSerializer。</td>
+    <td>检查 tracking URL/参数是否已释放；竞价失败回传是否在广告对象析构后仍回调。1.1.20 起明显放大。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>7</td>
+    <td><b>低</b></td>
+    <td>662</td>
+    <td><code>UIKitCore: + -1（空符号）</code><br/><span class="id">id: DlmMpUlOi9xJldzoOvTvaq</span></td>
+    <td>系统无符号归类</td>
+    <td>Organizer 符号缺失。部分下载日志主线程实际是 Spine binarySearch，崩溃线程在系统侧。多为归类落点。</td>
+    <td>先符号化再判断；可能是 Spine/GFX 的错误归类，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>8</td>
+    <td><b>低</b></td>
+    <td>541</td>
+    <td><code>__CFRunLoopServiceMachPort + 160</code><br/><span class="id">id: Dd3gWlREIS0UracQ_tDIJ</span></td>
+    <td>系统 / 进程终止归类</td>
+    <td>主线程 RunLoop 收 Mach 消息时进程退出。部分样本为 0xdead10cc（后台仍持锁被杀）。</td>
+    <td>进后台是否未关 SQLite/文件句柄。次要项。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>9</td>
+    <td><b>低</b></td>
+    <td>491</td>
+    <td><code>UIEventFetcher threadMain + 424</code><br/><span class="id">id: DdJJE5zcXIGxEtaa1cdix7</span></td>
+    <td>系统归类落点</td>
+    <td>与 +420 同家族（+424 vs +420）。EXC_CRASH(SIGSEGV)/codes 0。</td>
+    <td>同 UIEventFetcher 家族，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p0">
+    <td>10</td>
+    <td><b>高</b></td>
+    <td>397</td>
+    <td><code>cc::MessageQueue::consumerThreadLoop + 316</code><br/><span class="id">id: Dc6Nmaa19OUUJ5IFyUgKn0</span></td>
+    <td>引擎消息队列</td>
+    <td>Cocos 后台 MessageQueue 消费循环内崩溃；与 copyBuffersToTexture / doBufferTextureCopy 同属渲染异步管线。</td>
+    <td>与贴图上传两条合并分析。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>11</td>
+    <td><b>低</b></td>
+    <td>393</td>
+    <td><code>NO_CRASH_STACK</code><br/><span class="id">id: CX4TR2FhT4q3kSZ6oesj63</span></td>
+    <td>无栈 / 被杀归类</td>
+    <td>无有效崩溃栈。常见 Jetsam、看门狗或系统杀进程，无法定位业务帧。</td>
+    <td>结合内存与是否进后台；不作首要代码修复。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>12</td>
+    <td><b>低</b></td>
+    <td>375</td>
+    <td><code>UIKitCore + 4319260（未符号化）</code><br/><span class="id">id: DPajtsvUJB8g6HZIj2h3Yq</span></td>
+    <td>系统无符号归类</td>
+    <td>UIKit 未符号化偏移，与 UIEventFetcher / + -1 同类系统落点。</td>
+    <td>不单独当根因。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>13</td>
+    <td><b>中</b></td>
+    <td>352</td>
+    <td><code>MessageQueue::MemoryAllocator::request + 56</code><br/><span class="id">id: BRQad5-bIyhG1MThaNZgNH</span></td>
+    <td>引擎消息队列分配</td>
+    <td>渲染 MessageQueue 向分配器要内存时崩溃，偏内存压力或命令积压。</td>
+    <td>与贴图异步上传、大命令积压一起看；对照 NO_CRASH_STACK。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>14</td>
+    <td><b>中</b></td>
+    <td>341</td>
+    <td><code>cc::RefCounted::release()</code><br/><span class="id">id: Ckzy-THpeGDwnxoBI7w-Ta</span></td>
+    <td>引擎 / WebSocket + V8 GC</td>
+    <td>EXC_BAD_ACCESS 地址 0x8。样本：V8 GC → webSocketFinalize → RefCounted::release。原生对象已释放，JS finalize 仍 release。</td>
+    <td>WebSocket 关闭与 V8 弱回调时序；是否 double-free。可与 webSocketFinalize 对照。</td>
+    <td></td>
+  </tr>
+  <tr class="p1">
+    <td>15</td>
+    <td><b>中</b></td>
+    <td>336</td>
+    <td><code>basic_string&lt;char16_t&gt;::__grow_by</code><br/><span class="id">id: BXUcwRHzih5eMqTMyZrVNp</span></td>
+    <td>游戏脚本 + 引擎字符串</td>
+    <td>js_readJsonFile 后台读文件后 UTF8→UTF16 扩容失败并 abort。链：__grow_by → StringUtils::UTF8ToUTF16 → js_readJsonFile → LegacyThreadPool。</td>
+    <td>坏文件、超大文件、非 UTF8；js_readJsonFile 边界处理。</td>
+    <td></td>
+  </tr>
+</table>
+
+<h2 id="v1121_w">1.1.21 · Last Two Weeks</h2>
+<p class="note">设备数口径：ListablePoints 按版本过滤。前 15 合计 936（条目间可能有同一设备重复，仅作量级）。refresh=2026-08-13T09:59:25Z</p>
+<p class="concl"><b>本版结论：</b>本版可归因主因：spine::Animation::binarySearch + 40（371）。本表 Top 中，「强杀/进程已死还在上报」占设备数 <b>44%</b>（410/936）。</p>
+<table>
+  <tr>
+    <th style="width:28px">#</th>
+    <th style="width:40px">优先级</th>
+    <th style="width:52px">设备</th>
+    <th style="width:22%">Crash Point</th>
+    <th style="width:12%">类型 / 模块</th>
+    <th style="width:20%">实质原因</th>
+    <th>排查方向</th>
+    <th style="width:120px">说明</th>
+  </tr>
+  <tr class="p0">
+    <td>1</td>
+    <td><b>高</b></td>
+    <td>371</td>
+    <td><code>spine::Animation::binarySearch + 40</code><br/><span class="id">id: DYCtLsGQ9dTTZVtv86z1nb</span></td>
+    <td>游戏脚本 + 引擎 Spine</td>
+    <td>Spine 时间轴二分查找踩非法内存。常见空/损坏 frames，或 Skeleton/Animation 已释放仍 update。链：tick → js_cc_SkeletonAnimation_update → AnimationState::apply → TranslateTimeline → binarySearch（V8/jsb）。</td>
+    <td>节点销毁后是否仍 update；切场景是否未停动画；Spine 资源是否空/损坏。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>2</td>
+    <td><b>低</b></td>
+    <td>95</td>
+    <td><code>UIKitCore: + -1（空符号）</code><br/><span class="id">id: DlmMpUlOi9xJldzoOvTvaq</span></td>
+    <td>系统无符号归类</td>
+    <td>Organizer 符号缺失。部分下载日志主线程实际是 Spine binarySearch，崩溃线程在系统侧。多为归类落点。</td>
+    <td>先符号化再判断；可能是 Spine/GFX 的错误归类，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>3</td>
+    <td><b>低</b></td>
+    <td>88</td>
+    <td><code>UIEventFetcher threadMain + 420</code><br/><span class="id">id: DLv6v_kVaI3SezmMxhpnMD</span></td>
+    <td>系统归类落点</td>
+    <td>系统事件线程在 RunLoop/mach_msg 空闲等待时进程退出。EXC_CRASH(SIGSEGV)、codes 0；frame0 无游戏/Spine/GFX。Organizer 按该符号归类，业务根因不明确。</td>
+    <td>不宜当业务根因。优先观察高优先级项修复后是否下降。与 +408/+424 同家族。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>4</td>
+    <td><b>中</b></td>
+    <td>54</td>
+    <td><code>SMHTTPRequestSerializer requestWithMethod + 272</code><br/><span class="id">id: BvsISEUL6DI9hO8mClzYrX</span></td>
+    <td>App ObjC 网络 + 广告竞价回传</td>
+    <td>SIGABRT：释放非法 CFString（POINTER_BEING_FREED_WAS_NOT_ALLOCATED）。1.1.21 样本：AnyThink 激励视频 bid loss → Wind/Sigmob sendLossNotification → SMNetworkManager GET → SMHTTPRequestSerializer。</td>
+    <td>检查 tracking URL/参数是否已释放；竞价失败回传是否在广告对象析构后仍回调。1.1.20 起明显放大。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>5</td>
+    <td><b>低</b></td>
+    <td>45</td>
+    <td><code>__CFRunLoopServiceMachPort + 160</code><br/><span class="id">id: Dd3gWlREIS0UracQ_tDIJ</span></td>
+    <td>系统 / 进程终止归类</td>
+    <td>主线程 RunLoop 收 Mach 消息时进程退出。部分样本为 0xdead10cc（后台仍持锁被杀）。</td>
+    <td>进后台是否未关 SQLite/文件句柄。次要项。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>6</td>
+    <td><b>中</b></td>
+    <td>41</td>
+    <td><code>MessageQueue::MemoryAllocator::request + 56</code><br/><span class="id">id: BRQad5-bIyhG1MThaNZgNH</span></td>
+    <td>引擎消息队列分配</td>
+    <td>渲染 MessageQueue 向分配器要内存时崩溃，偏内存压力或命令积压。</td>
+    <td>与贴图异步上传、大命令积压一起看；对照 NO_CRASH_STACK。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>7</td>
+    <td><b>中</b></td>
+    <td>37</td>
+    <td><code>cc::RefCounted::release()</code><br/><span class="id">id: Ckzy-THpeGDwnxoBI7w-Ta</span></td>
+    <td>引擎 / WebSocket + V8 GC</td>
+    <td>EXC_BAD_ACCESS 地址 0x8。样本：V8 GC → webSocketFinalize → RefCounted::release。原生对象已释放，JS finalize 仍 release。</td>
+    <td>WebSocket 关闭与 V8 弱回调时序；是否 double-free。可与 webSocketFinalize 对照。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>8</td>
+    <td><b>低</b></td>
+    <td>32</td>
+    <td><code>UIEventFetcher threadMain + 424</code><br/><span class="id">id: DdJJE5zcXIGxEtaa1cdix7</span></td>
+    <td>系统归类落点</td>
+    <td>与 +420 同家族（+424 vs +420）。EXC_CRASH(SIGSEGV)/codes 0。</td>
+    <td>同 UIEventFetcher 家族，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>9</td>
+    <td><b>中</b></td>
+    <td>32</td>
+    <td><code>cc::Semaphore::wait() + 16</code><br/><span class="id">id: Dy6cyhTJizogQSegMX_WS5</span></td>
+    <td>引擎帧同步 / GFX</td>
+    <td>Root::frameMoveEnd 等待渲染/GPU 信号量异常（超时、未 signal、或前序 GFX 异常后同步态损坏）。链：Semaphore::wait → frameMoveEnd → js_cc_Root_frameMove。</td>
+    <td>先修贴图空 buffer，再观察本点；若仍高，查 frameMove 与进前后台 GPU 队列。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>10</td>
+    <td><b>低</b></td>
+    <td>31</td>
+    <td><code>NO_CRASH_STACK</code><br/><span class="id">id: CX4TR2FhT4q3kSZ6oesj63</span></td>
+    <td>无栈 / 被杀归类</td>
+    <td>无有效崩溃栈。常见 Jetsam、看门狗或系统杀进程，无法定位业务帧。</td>
+    <td>结合内存与是否进后台；不作首要代码修复。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>11</td>
+    <td><b>低</b></td>
+    <td>28</td>
+    <td><code>UIKitCore + 4319260（未符号化）</code><br/><span class="id">id: DPajtsvUJB8g6HZIj2h3Yq</span></td>
+    <td>系统无符号归类</td>
+    <td>UIKit 未符号化偏移，与 UIEventFetcher / + -1 同类系统落点。</td>
+    <td>不单独当根因。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>12</td>
+    <td><b>低</b></td>
+    <td>22</td>
+    <td><code>_AssertAutoLayoutOnAllowedThreadsOnly</code><br/><span class="id">id: DF3Jm2JaGsfRyv7x4bDP3B</span></td>
+    <td>系统 AutoLayout 线程断言</td>
+    <td>非主线程碰 AutoLayout 触发断言。</td>
+    <td>查后台线程是否改 UI/约束（广告 SDK 较常见）。</td>
+    <td></td>
+  </tr>
+  <tr class="p1">
+    <td>13</td>
+    <td><b>中</b></td>
+    <td>21</td>
+    <td><code>webSocketFinalize(se::State&amp;) + 80</code><br/><span class="id">id: CO8oHl7y6LSpt2ttqdULa4</span></td>
+    <td>引擎 WebSocket + V8</td>
+    <td>JS WebSocket 对象 finalize 时崩溃。与 RefCounted::release 同族（GC 时原生对象已释放）。</td>
+    <td>与 RefCounted 一并查 WebSocket 生命周期。</td>
+    <td></td>
+  </tr>
+  <tr class="p1">
+    <td>14</td>
+    <td><b>中</b></td>
+    <td>21</td>
+    <td><code>framegraph ResourceAllocator::gc</code><br/><span class="id">id: XYiBHa9gZiquPNPxGCOzY</span></td>
+    <td>引擎 GFX 帧图回收</td>
+    <td>Framebuffer 资源回收 gc 时崩溃，偏渲染资源已释放仍 gc。</td>
+    <td>切场景/退后台时 Framebuffer 是否仍被帧图持有。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>15</td>
+    <td><b>低</b></td>
+    <td>18</td>
+    <td><code>UIEventFetcher threadMain + 408</code><br/><span class="id">id: wS7kp73XfZA0BfdWki9in</span></td>
+    <td>系统归类落点</td>
+    <td>与 +420 同家族不同偏移。栈停在 mach_msg → CFRunLoop → UIEventFetcher。</td>
+    <td>同 UIEventFetcher 家族，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+</table>
+
+<h2 id="v1122_w">1.1.22 · Last Two Weeks</h2>
+<p class="note">设备数口径：ListablePoints 按版本过滤。前 15 合计 62（条目间可能有同一设备重复，仅作量级）。refresh=2026-08-13T09:59:10Z</p>
+<p class="concl"><b>本版结论：</b>本版可归因主因：spine::Animation::binarySearch + 40（15）。本表 Top 中，「强杀/进程已死还在上报」占设备数 <b>56%</b>（35/62）。</p>
+<table>
+  <tr>
+    <th style="width:28px">#</th>
+    <th style="width:40px">优先级</th>
+    <th style="width:52px">设备</th>
+    <th style="width:22%">Crash Point</th>
+    <th style="width:12%">类型 / 模块</th>
+    <th style="width:20%">实质原因</th>
+    <th>排查方向</th>
+    <th style="width:120px">说明</th>
+  </tr>
+  <tr class="p0">
+    <td>1</td>
+    <td><b>高</b></td>
+    <td>15</td>
+    <td><code>spine::Animation::binarySearch + 40</code><br/><span class="id">id: DYCtLsGQ9dTTZVtv86z1nb</span></td>
+    <td>游戏脚本 + 引擎 Spine</td>
+    <td>Spine 时间轴二分查找踩非法内存。常见空/损坏 frames，或 Skeleton/Animation 已释放仍 update。链：tick → js_cc_SkeletonAnimation_update → AnimationState::apply → TranslateTimeline → binarySearch（V8/jsb）。</td>
+    <td>节点销毁后是否仍 update；切场景是否未停动画；Spine 资源是否空/损坏。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>2</td>
+    <td><b>低</b></td>
+    <td>9</td>
+    <td><code>UIKitCore: + -1（空符号）</code><br/><span class="id">id: DlmMpUlOi9xJldzoOvTvaq</span></td>
+    <td>系统无符号归类</td>
+    <td>Organizer 符号缺失。部分下载日志主线程实际是 Spine binarySearch，崩溃线程在系统侧。多为归类落点。</td>
+    <td>先符号化再判断；可能是 Spine/GFX 的错误归类，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>3</td>
+    <td><b>低</b></td>
+    <td>6</td>
+    <td><code>UIEventFetcher threadMain + 420</code><br/><span class="id">id: DLv6v_kVaI3SezmMxhpnMD</span></td>
+    <td>系统归类落点</td>
+    <td>系统事件线程在 RunLoop/mach_msg 空闲等待时进程退出。EXC_CRASH(SIGSEGV)、codes 0；frame0 无游戏/Spine/GFX。Organizer 按该符号归类，业务根因不明确。</td>
+    <td>不宜当业务根因。优先观察高优先级项修复后是否下降。与 +408/+424 同家族。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>4</td>
+    <td><b>中</b></td>
+    <td>5</td>
+    <td><code>SMHTTPRequestSerializer requestWithMethod + 272</code><br/><span class="id">id: BvsISEUL6DI9hO8mClzYrX</span></td>
+    <td>App ObjC 网络 + 广告竞价回传</td>
+    <td>SIGABRT：释放非法 CFString（POINTER_BEING_FREED_WAS_NOT_ALLOCATED）。1.1.21 样本：AnyThink 激励视频 bid loss → Wind/Sigmob sendLossNotification → SMNetworkManager GET → SMHTTPRequestSerializer。</td>
+    <td>检查 tracking URL/参数是否已释放；竞价失败回传是否在广告对象析构后仍回调。1.1.20 起明显放大。</td>
+    <td></td>
+  </tr>
+  <tr class="p1">
+    <td>5</td>
+    <td><b>中</b></td>
+    <td>4</td>
+    <td><code>cc::Semaphore::wait() + 16</code><br/><span class="id">id: Dy6cyhTJizogQSegMX_WS5</span></td>
+    <td>引擎帧同步 / GFX</td>
+    <td>Root::frameMoveEnd 等待渲染/GPU 信号量异常（超时、未 signal、或前序 GFX 异常后同步态损坏）。链：Semaphore::wait → frameMoveEnd → js_cc_Root_frameMove。</td>
+    <td>先修贴图空 buffer，再观察本点；若仍高，查 frameMove 与进前后台 GPU 队列。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>6</td>
+    <td><b>低</b></td>
+    <td>3</td>
+    <td><code>NO_CRASH_STACK</code><br/><span class="id">id: CX4TR2FhT4q3kSZ6oesj63</span></td>
+    <td>无栈 / 被杀归类</td>
+    <td>无有效崩溃栈。常见 Jetsam、看门狗或系统杀进程，无法定位业务帧。</td>
+    <td>结合内存与是否进后台；不作首要代码修复。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>7</td>
+    <td><b>低</b></td>
+    <td>3</td>
+    <td><code>UIEventFetcher threadMain + 424</code><br/><span class="id">id: DdJJE5zcXIGxEtaa1cdix7</span></td>
+    <td>系统归类落点</td>
+    <td>与 +420 同家族（+424 vs +420）。EXC_CRASH(SIGSEGV)/codes 0。</td>
+    <td>同 UIEventFetcher 家族，不单独排期。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>8</td>
+    <td><b>中</b></td>
+    <td>3</td>
+    <td><code>framegraph ResourceAllocator::gc</code><br/><span class="id">id: XYiBHa9gZiquPNPxGCOzY</span></td>
+    <td>引擎 GFX 帧图回收</td>
+    <td>Framebuffer 资源回收 gc 时崩溃，偏渲染资源已释放仍 gc。</td>
+    <td>切场景/退后台时 Framebuffer 是否仍被帧图持有。</td>
+    <td></td>
+  </tr>
+  <tr class="p1">
+    <td>9</td>
+    <td><b>中</b></td>
+    <td>2</td>
+    <td><code>MessageQueue::MemoryAllocator::request + 56</code><br/><span class="id">id: BRQad5-bIyhG1MThaNZgNH</span></td>
+    <td>引擎消息队列分配</td>
+    <td>渲染 MessageQueue 向分配器要内存时崩溃，偏内存压力或命令积压。</td>
+    <td>与贴图异步上传、大命令积压一起看；对照 NO_CRASH_STACK。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>10</td>
+    <td><b>中</b></td>
+    <td>2</td>
+    <td><code>basic_string&lt;char16_t&gt;::__grow_by</code><br/><span class="id">id: BXUcwRHzih5eMqTMyZrVNp</span></td>
+    <td>游戏脚本 + 引擎字符串</td>
+    <td>js_readJsonFile 后台读文件后 UTF8→UTF16 扩容失败并 abort。链：__grow_by → StringUtils::UTF8ToUTF16 → js_readJsonFile → LegacyThreadPool。</td>
+    <td>坏文件、超大文件、非 UTF8；js_readJsonFile 边界处理。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>11</td>
+    <td><b>低</b></td>
+    <td>2</td>
+    <td><code>UIKitCore 未符号化偏移</code><br/><span class="id">id: CgYnEy0fbG5wMzEeyTuUBf</span></td>
+    <td>系统无符号归类</td>
+    <td>UIKit 未符号化，系统归类。</td>
+    <td>不单独当根因。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>12</td>
+    <td><b>低</b></td>
+    <td>2</td>
+    <td><code>UIKitCore + 4319260（未符号化）</code><br/><span class="id">id: DPajtsvUJB8g6HZIj2h3Yq</span></td>
+    <td>系统无符号归类</td>
+    <td>UIKit 未符号化偏移，与 UIEventFetcher / + -1 同类系统落点。</td>
+    <td>不单独当根因。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p2">
+    <td>13</td>
+    <td><b>低</b></td>
+    <td>2</td>
+    <td><code>__CFRunLoopServiceMachPort + 160</code><br/><span class="id">id: Dd3gWlREIS0UracQ_tDIJ</span></td>
+    <td>系统 / 进程终止归类</td>
+    <td>主线程 RunLoop 收 Mach 消息时进程退出。部分样本为 0xdead10cc（后台仍持锁被杀）。</td>
+    <td>进后台是否未关 SQLite/文件句柄。次要项。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+  <tr class="p1">
+    <td>14</td>
+    <td><b>中低</b></td>
+    <td>2</td>
+    <td><code>AnyThinkSDK 未符号化偏移</code><br/><span class="id">id: DppiNNa6g70pNLPDn8d_Hu</span></td>
+    <td>广告聚合 SDK</td>
+    <td>TopOn/AnyThink 内部崩溃，未符号化。1.1.22 近两周仅 2 台。</td>
+    <td>符号化 AnyThink 后再看；量低先观察。</td>
+    <td></td>
+  </tr>
+  <tr class="p2">
+    <td>15</td>
+    <td><b>低</b></td>
+    <td>2</td>
+    <td><code>UIKitCore 未符号化偏移</code><br/><span class="id">id: OPfPaY0RNTPl-nRRwt-k2</span></td>
+    <td>系统无符号归类</td>
+    <td>UIKit 未符号化，系统归类。</td>
+    <td>不单独当根因。</td>
+    <td class="kill-yes">强杀/进程已死还在上报</td>
+  </tr>
+</table>
+
+<p class="meta">「强杀/进程已死还在上报」：UIEventFetcher、UIKit 空符号/未符号化、NO_CRASH_STACK、CFRunLoop（含 0xdead10cc）、Semaphore::wait。不当成产品闪退。未打标的才是真 crash（Spine、贴图、GDT、SMHTTP、JSON）。排查顺序：① Spine 生命周期 ② 贴图 uploadData ③ 1.1.20+ SMHTTP ④ JSON UTF。</p>
+</body></html>

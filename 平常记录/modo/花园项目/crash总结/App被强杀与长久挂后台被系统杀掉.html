@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<title>App 被强杀 / 长久挂后台被系统杀掉</title>
+<style>
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;margin:28px;color:#111;background:#fff;max-width:900px}
+  h1{font-size:20px;margin:0 0 8px}
+  h2{font-size:15px;margin:22px 0 8px;border-left:4px solid #222;padding-left:8px}
+  h3{font-size:14px;margin:14px 0 6px}
+  p,li{font-size:14px;line-height:1.6}
+  .meta{color:#555;font-size:13px;margin:0 0 18px}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+  pre{font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.45;background:#f4f4f4;border:1px solid #ddd;padding:10px 12px;overflow:auto;margin:8px 0 12px}
+  .box{border:1px solid #ccc;padding:12px 14px;margin:10px 0 16px;background:#fafafa}
+  table{border-collapse:collapse;width:100%;font-size:13px;margin:10px 0 14px}
+  th,td{border:1px solid #ccc;padding:8px 10px;vertical-align:top;text-align:left}
+  th{background:#f2f2f2}
+  .tag-a{color:#666}
+  .tag-b{color:#b00020;font-weight:600}
+</style>
+</head>
+<body>
+<h1>App 被强杀 / 长久挂后台被系统杀掉</h1>
+<p class="meta">玩家从多任务划掉，或挂后台太久被系统回收时，Organizer 会记下一堆「crash」。其中一大半是进程已经被杀掉后的误报；另一部分才是进后台前后游戏还在跑、踩了空对象。</p>
+<p class="meta">给原生和游戏一起看。下面「现状」= 工程里现在已经怎样；「建议补」= 现在还没有、准备新写；「继续空着」= 现在没写，也别往那里加。</p>
+
+<h2>1. 分类：系统杀掉 vs 游戏自己崩了</h2>
+<p>先对号，再决定改不改代码。</p>
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>A. 强杀 / 系统回收后的误报</th>
+      <th>B. 游戏自己崩了（要修）</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>实际发生了什么</th>
+      <td>玩家划掉 App，或挂后台太久（内存紧张、系统回收）。进程已经被系统杀掉。</td>
+      <td>进程还活着。某个 Spine / 贴图已经没了，代码还去 update / 上传，于是真的崩了。</td>
+    </tr>
+    <tr>
+      <th>玩家会不会感觉「闪退」</th>
+      <td>多数不会。划掉或挂太久被回收，是系统正常行为。</td>
+      <td>会。前台，或刚切到后台时，游戏直接没了。</td>
+    </tr>
+    <tr>
+      <th>栈上常见名字</th>
+      <td><code>UIEventFetcher</code>、<code>NO_CRASH_STACK</code>、UIKit 空符号、<code>CFRunLoop</code>（有的带 <code>0xdead10cc</code>）、<code>Semaphore::wait</code></td>
+      <td>Spine <code>binarySearch</code>、贴图 <code>uploadData</code> / <code>doBufferTextureCopy</code></td>
+    </tr>
+    <tr>
+      <th>系统给的类型</th>
+      <td><code>EXC_CRASH</code>，codes <code>0x0/0x0</code>，或 SIGKILL</td>
+      <td>前台 <code>EXC_BAD_ACCESS</code>（空指针）</td>
+    </tr>
+    <tr>
+      <th>要不要改代码</th>
+      <td class="tag-a">大部分不用专门排期。改了 Organizer 里这类条目也消不掉。<br/>唯一值得补的是 <code>0xdead10cc</code>（挂后台时还握着文件锁，系统回收时标这个）。</td>
+      <td class="tag-b">要补。进后台、销毁节点后还在发任务，才会走到这条。</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><b>数量（只贴量大、能说明问题的）</b>　设备数为该版本 Top 条目量级，条目间可能有同一设备重复。1.1.10 / 1.1.11 为 Last Year；1.1.20 / 1.1.22 为近两周。</p>
+<table>
+  <thead>
+    <tr>
+      <th>类别</th>
+      <th>代表栈</th>
+      <th>1.1.10（年）</th>
+      <th>1.1.11（年，峰值）</th>
+      <th>1.1.20（近两周）</th>
+      <th>1.1.22（近两周）</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A 强杀 / 系统回收误报</td>
+      <td><code>UIEventFetcher</code> / 无栈 / RunLoop 等合计</td>
+      <td>占 Top <b>40%</b><br/>5423 / 13480</td>
+      <td>占 Top <b>42%</b><br/>11053 / 26583</td>
+      <td>占 Top <b>43%</b><br/>5670 / 13142</td>
+      <td>占 Top <b>56%</b><br/>35 / 62</td>
+    </tr>
+    <tr>
+      <td>B Spine</td>
+      <td><code>spine::Animation::binarySearch</code></td>
+      <td><b>4709</b>（该版第 1）</td>
+      <td><b>9423</b>（该版第 1）</td>
+      <td><b>3767</b>（该版第 1）</td>
+      <td><b>15</b>（该版仍第 1）</td>
+    </tr>
+    <tr>
+      <td>B 贴图</td>
+      <td><code>copyBuffersToTexture</code> / <code>doBufferTextureCopy</code></td>
+      <td>667</td>
+      <td>1813 + 1106</td>
+      <td>928 + 957</td>
+      <td>量小，未进结论主因</td>
+    </tr>
+  </tbody>
+</table>
+<p class="meta">读法：A 类大约占 Top 四成到一半，条数多不等于玩家闪退。B 类 Spine 从 1.1.10 到 1.1.22 一直是可归因第 1；贴图是同一条链上的第二块。后文第 3 节只处理 A，第 4 节只处理 B。</p>
+
+<h2>2. 停任务要卡在「进后台」，不是「被杀掉那一下」</h2>
+<p>强杀和长久挂后台被回收，游戏都收不到「即将退出」。能跑代码的只有进后台那一下。</p>
+<table>
+  <thead>
+    <tr><th>玩家在干什么</th><th>游戏还能不能跑代码</th><th>停任务写这里行不行</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>按 Home、切到别的 App、来电话（刚进后台）</td>
+      <td>能。Cocos 会发「进入隐藏」<code>EVENT_HIDE</code>。原生也还能跑一小段。</td>
+      <td><b>行。</b>停引擎、停 Spine、丢掉过期网络回调，都放这里。</td>
+    </tr>
+    <tr>
+      <td>从多任务划掉（强杀）</td>
+      <td>通常不能。App 多半已经睡着，系统直接杀进程，<b>没有「即将退出」给脚本挂钩</b>。</td>
+      <td>写了也执行不到。</td>
+    </tr>
+    <tr>
+      <td>挂后台太久，被系统回收</td>
+      <td>同样不能。系统直接回收进程，也没有退出回调。</td>
+      <td>写了也执行不到。能做的，还是进后台时就把任务停掉、把文件锁放掉。</td>
+    </tr>
+  </tbody>
+</table>
+<p><b>闸门 = 刚进后台那一下。</b>后面无论是划掉还是被系统回收，都只是杀进程，不是游戏的退出回调。</p>
+<p><b>现状（原生）：</b><code>applicationWillTerminate</code>（iOS「即将退出」）在 <code>AppDelegate.mm</code> 里已经是空的，里面的调用都被注释掉了。</p>
+<p><b>继续空着：</b>别把停游戏、pause、关 Spine 填进这个空方法。强杀和系统回收都走不到这里。crash 栈里看不到它是正常的。</p>
+
+<h2>3. A 类怎么办（强杀 / 系统回收误报）</h2>
+<div class="box">
+<p><b>现状：</b>Organizer 里大量落在 <code>UIEventFetcher</code> / <code>NO_CRASH_STACK</code> / UIKit 空栈。工程里没有对应的业务代码可改——进程已经被杀掉了。</p>
+<p><b>继续空着：</b>不用专门写「修复 Fetcher / 无栈」的补丁，也没有回调可挂。A 类条数下降也不能当这次改动成功。</p>
+<p><b>建议补（仅这一种）：</b>挂后台时还握着 SQLite / 文件锁，系统回收时会标 <code>0xdead10cc</code>。进后台把锁放掉。当前 <code>DidEnterBackground</code> 里还没有这步。</p>
+<pre>- (void)applicationDidEnterBackground:(UIApplication *)application {
+    [[SDKWrapper shared] applicationDidEnterBackground:application];
+    // 建议补：关掉 SQLite / 文件句柄 / 跨进程锁
+}</pre>
+</div>
+
+<h2>4. B 类怎么改（进后台前后游戏自己崩了）</h2>
+<p>B 类是「节点 / buffer 已经没了，代码还在 update」。原生停引擎帧，游戏停动画和过期回调，两层都要有。</p>
+
+<h3>4.A 原生：进后台把引擎停住</h3>
+<div class="box">
+<p><b>改哪里：</b><code>native/engine/ios/AppDelegate.mm</code></p>
+<p><b>现状已有：</b>失活时 <code>applicationWillResignActive</code> 已经调了 <code>appDelegateBridge</code>，引擎 pause 多半在这。</p>
+<p><b>建议补：</b>进后台 <code>applicationDidEnterBackground</code> 现在只调了 <code>SDKWrapper</code>，还没调 <code>appDelegateBridge</code>。回前台 <code>WillEnterForeground</code> 同样还没调 bridge，需要成对 resume。</p>
+<pre>- (void)applicationWillResignActive:(UIApplication *)application {
+    [[SDKWrapper shared] applicationWillResignActive:application];
+    [appDelegateBridge applicationWillResignActive:application]; // 现状已有
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+    [[SDKWrapper shared] applicationDidEnterBackground:application];
+    [appDelegateBridge applicationDidEnterBackground:application]; // 建议补
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application {
+    [[SDKWrapper shared] applicationWillEnterForeground:application];
+    [appDelegateBridge applicationWillEnterForeground:application]; // 建议补
+}</pre>
+<p class="meta">若 Bridge 没有 background 方法：在 Cocos 线程 <code>evalString("cc.game.pause()")</code>，回前台再 <code>resume()</code>。这些补在进后台，不填进第 2 节那个已经空着的退出方法。</p>
+</div>
+
+<h3>4.B 游戏：隐藏时停任务，销毁后丢回调</h3>
+<div class="box">
+<p><b>建议补：</b>启动时注册一次全局隐藏/显示；带 Spine 的组件销毁时先停动画；WebSocket / 下图回调里先判断节点还在不在。这些目前不是「已经写了别动」，而是准备新写。</p>
+<ul>
+  <li>隐藏：<code>cc.game.pause()</code>，停 Spine，清 <code>schedule</code>。</li>
+  <li>销毁：先停动画，再销毁；销毁后不再 <code>update</code>。</li>
+  <li>网络回调：节点没了或已经 pause，直接 return，不再 <code>uploadData</code> / 播动画。</li>
+</ul>
+<pre>// 全局，启动时注册一次
+cc.game.on(cc.Game.EVENT_HIDE, () => { cc.game.pause(); });
+cc.game.on(cc.Game.EVENT_SHOW, () => { cc.game.resume(); });
+
+// 带 Spine 的组件
+onDestroy() {
+    this.skeleton?.clearTracks();
+    this.skeleton?.paused = true;
+    this.unscheduleAllCallbacks();
+}
+
+// 网络 / 贴图回调
+onMessage(data) {
+    if (!cc.isValid(this.node) || cc.game.isPaused) return;
+    // 再 update / uploadData
+}</pre>
+<p class="meta">B 类典型链：<code>WebSocket onMessage</code> → JS → <code>SkeletonAnimation.update</code> → <code>binarySearch</code>。原生 pause 停不掉这条异步回调，游戏侧要自己拦截。</p>
+</div>
+
+<h2>5. 对照：已经怎样，准备怎样</h2>
+<table>
+  <thead>
+    <tr><th>点</th><th>现状</th><th>准备怎么做</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>「即将退出」方法</td>
+      <td>已经空着（调用被注释掉了）</td>
+      <td>继续空着。强杀和系统回收都走不到。停游戏写在进后台。</td>
+    </tr>
+    <tr>
+      <td>A 类 Fetcher / 无栈</td>
+      <td>没有对应业务代码</td>
+      <td>不新写修复。当强杀 / 系统回收误报统计。</td>
+    </tr>
+    <tr>
+      <td>进后台通知引擎</td>
+      <td>ResignActive 已有；DidEnterBackground 还没有</td>
+      <td>建议补，见 4.A</td>
+    </tr>
+    <tr>
+      <td>游戏 HIDE / 销毁 / 网络回调守卫</td>
+      <td>还没有按 B 类链补全</td>
+      <td>建议补，见 4.B。原生和游戏都要补，只改一层仍会空指针。</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>6. 单机怎么验收</h2>
+<p>一台真机、Xcode 连着打，当场就能判断。Organizer 上传延迟常以天计，改完当天看不到，<b>不当作这次的验收手段</b>。发版后过几天再看趋势即可。</p>
+<table>
+  <thead>
+    <tr><th>要确认的事</th><th>本机怎么看（立刻）</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>进后台有没有停住</td>
+      <td>Xcode 跑真机。按 Home 后，原生日志应立刻出现 ResignActive / DidEnterBackground；游戏日志应立刻出现 <code>EVENT_HIDE</code> 和 <code>pause</code>。<br/>再划掉 App，或挂很久等系统回收：通常看不到「即将退出」日志，这是正常的，不代表没改到。</td>
+    </tr>
+    <tr>
+      <td>B 类还会不会崩</td>
+      <td>用会复现的场景：进战斗 / 有 Spine 的界面 → 进后台 → 此时仍可能收到 WebSocket → 再回前台或切场景销毁节点。<br/>改前：Xcode 会直接停在 <code>EXC_BAD_ACCESS</code>（Spine / 贴图）。<br/>改后：<code>onMessage</code> 应打到 <code>return</code>，不再进 <code>update</code> / <code>uploadData</code>；Xcode 不再因这条崩。</td>
+    </tr>
+    <tr>
+      <td>节点毁了回调还在不在跑</td>
+      <td>在 <code>onMessage</code> 第一行打日志：<code>cc.isValid(this.node)</code>、<code>cc.game.isPaused</code>。销毁或 pause 后必须是「直接 return」，不能再碰 Spine。</td>
+    </tr>
+    <tr>
+      <td>本机已经崩过一次</td>
+      <td>Xcode 当时就会停住。也可到手机 <b>设置 → 隐私与安全性 → 分析与改进 → 分析数据</b> 看当天的 <code>.ips</code>，比 Organizer 快很多。</td>
+    </tr>
+    <tr>
+      <td>A 类条数</td>
+      <td>单机看不出来。发版后过几天再扫 Organizer 趋势。A 类 Fetcher 还在，不说明这次失败——强杀和系统回收本来就会继续上报。</td>
+    </tr>
+  </tbody>
+</table>
+<p class="meta">若接了 Crashlytics 一类近实时上报，可比 Organizer 快，但仍不是秒级。本次验收以 Xcode 当场是否还踩空指针为准。</p>
+</body>
+</html>

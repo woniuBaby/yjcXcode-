@@ -469,3 +469,15 @@
 - 变更内容：新增 NativeBility `AGENTS.md`，写入能力文档同步、插件文档改造、个人桌面日志和验证要求；新增 Cursor rule `ability-doc-sync.mdc`，覆盖 NativeBility 插件代码、docs、WidgetCommon / WidgetUI 能力接入；明确桌面日志是个人机器路径，目录不存在时同事可跳过。
 - 验证情况：已通过 `rg` 检查 NativeBility 规则可检索；已执行 `git diff --check` 检查规则与日志无空白错误；未运行业务构建，因为本次仅修改 AI 工作流规则和文档。
 - 标签：#codex #cursor #skills #rules #agents-md #nativebility #docs #workflow
+
+## 2026-08-12 - 能力文档同步增加临时验证测试分支
+
+- 项目：HuaYuann / modo-native-ability-ios / NativeBility
+- 变更对象：
+  - `/Users/lin/Documents/HuaYuann/AGENTS.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/AGENTS.md`
+  - `/Users/lin/Documents/modo-native-ability-ios/NativeBility/.cursor/rules/ability-doc-sync.mdc`
+- 变更原因：临时验证或测试代码通常会在验证完成后整体回退，若不改变正式对外行为，强制同步正式能力文档会产生无效维护成本。
+- 变更内容：能力 SDK 修改前先判断是否仅为临时验证 / 测试；只有不改变正式 API、协议、字段、返回结构或长期产品行为，且代码有明显临时标记、可整体删除并预计回退时，才允许不更新正式能力文档。任一条件不满足仍按正式能力改动同步文档；跳过时最终回复必须明确说明原因。
+- 验证情况：已使用 `rg` 检查三处规则文字可检索，并执行 `git diff --check`；未运行业务构建，因为本次仅修改 AI 工作流规则和日志。
+- 标签：#codex #cursor #skills #rules #agents-md #nativebility #docs #workflow #test

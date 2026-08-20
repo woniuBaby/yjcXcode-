@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1800" viewBox="0 0 1800 1800">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#52606d"/>
+    </marker>
+    <style>
+      .title{font:700 34px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;fill:#172b4d}
+      .lane{font:700 26px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;fill:#172b4d}
+      .head{font:700 19px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;fill:#172b4d}
+      .text{font:16px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;fill:#243b53}
+      .small{font:14px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;fill:#486581}
+      .arrow{stroke:#52606d;stroke-width:2.5;fill:none;marker-end:url(#arrow)}
+      .dash{stroke:#7b8794;stroke-width:2;fill:none;stroke-dasharray:8 7;marker-end:url(#arrow)}
+      .warn{font:700 18px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;fill:#9b2c2c}
+      .warnText{font:15px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;fill:#742a2a}
+    </style>
+  </defs>
+  <rect width="1800" height="1345" fill="#f7f9fc"/>
+  <text x="900" y="54" text-anchor="middle" class="title">HuaYuann iOS 冷启动：原生 / RN / Cocos 游戏三泳道</text>
+  <text x="900" y="86" text-anchor="middle" class="small">百分比是 Loading UI 的显示值；泳道表示实际执行主体。虚线表示跨层消息或并行依赖。</text>
+
+  <rect x="30" y="115" width="1740" height="300" rx="18" fill="#e9f2ff" stroke="#6b9bd2" stroke-width="2"/>
+  <rect x="30" y="430" width="1740" height="300" rx="18" fill="#fff4d9" stroke="#d29b2e" stroke-width="2"/>
+  <rect x="30" y="745" width="1740" height="370" rx="18" fill="#e8f7ef" stroke="#4d9b72" stroke-width="2"/>
+  <text x="65" y="155" class="lane">原生 iOS / NativeBility</text>
+  <text x="65" y="470" class="lane">RN（MDRNSource）</text>
+  <text x="65" y="785" class="lane">Cocos 游戏</text>
+
+  <g>
+    <rect x="65" y="185" width="250" height="145" rx="12" fill="#fff" stroke="#6b9bd2" stroke-width="2"/>
+    <text x="190" y="218" text-anchor="middle" class="head">创建宿主与 Loading</text>
+    <text x="190" y="249" text-anchor="middle" class="text">ViewController</text>
+    <text x="190" y="275" text-anchor="middle" class="text">CocosMainView</text>
+    <text x="190" y="301" text-anchor="middle" class="small">注册 RN / Cocos 通道</text>
+
+    <rect x="360" y="185" width="250" height="145" rx="12" fill="#fff" stroke="#6b9bd2" stroke-width="2"/>
+    <text x="485" y="218" text-anchor="middle" class="head">1%～10% 入口配置</text>
+    <text x="485" y="249" text-anchor="middle" class="text">1～9：定时假进度</text>
+    <text x="485" y="275" text-anchor="middle" class="text">queryPackageConfig</text>
+    <text x="485" y="301" text-anchor="middle" class="small">成功后固定更新到 10%</text>
+
+    <rect x="655" y="185" width="280" height="145" rx="12" fill="#fff" stroke="#6b9bd2" stroke-width="2"/>
+    <text x="795" y="218" text-anchor="middle" class="head">11%～30% RN 热更</text>
+    <text x="795" y="249" text-anchor="middle" class="text">原生 RnCodePush 执行</text>
+    <text x="795" y="275" text-anchor="middle" class="text">11～20 下载 RN bundle</text>
+    <text x="795" y="301" text-anchor="middle" class="text">21～30 解压 RN bundle</text>
+
+    <rect x="980" y="185" width="250" height="145" rx="12" fill="#fff" stroke="#6b9bd2" stroke-width="2"/>
+    <text x="1105" y="218" text-anchor="middle" class="head">创建 RN 容器</text>
+    <text x="1105" y="249" text-anchor="middle" class="text">GameReactView</text>
+    <text x="1105" y="275" text-anchor="middle" class="small">隐藏在 Loading 后方</text>
+    <text x="1105" y="301" text-anchor="middle" class="small">无热更时可由 10 直接跳转</text>
+
+    <rect x="1275" y="185" width="440" height="145" rx="12" fill="#fff" stroke="#6b9bd2" stroke-width="2"/>
+    <text x="1495" y="218" text-anchor="middle" class="head">61%～99% 的原生职责</text>
+    <text x="1495" y="249" text-anchor="middle" class="text">NativeEventProcessor 接收游戏 runProgress</text>
+    <text x="1495" y="275" text-anchor="middle" class="text">显示值 = floor(cur / total × 39 + 60)</text>
+    <text x="1495" y="301" text-anchor="middle" class="small">仅映射和刷新 UI，不执行游戏加载任务</text>
+  </g>
+
+  <g>
+    <rect x="980" y="500" width="250" height="160" rx="12" fill="#fff" stroke="#d29b2e" stroke-width="2"/>
+    <text x="1105" y="533" text-anchor="middle" class="head">31%～39% RN 启动</text>
+    <text x="1105" y="562" text-anchor="middle" class="text">31 入口响应校验</text>
+    <text x="1105" y="587" text-anchor="middle" class="text">33 协议　35 initGame</text>
+    <text x="1105" y="612" text-anchor="middle" class="text">37 packInit　39 登录开始</text>
+    <text x="1105" y="637" text-anchor="middle" class="small">RN JS 固定里程碑</text>
+
+    <rect x="1275" y="500" width="200" height="160" rx="12" fill="#fff" stroke="#d29b2e" stroke-width="2"/>
+    <text x="1375" y="533" text-anchor="middle" class="head">50% 登录成功</text>
+    <text x="1375" y="566" text-anchor="middle" class="text">loginCallback</text>
+    <text x="1375" y="593" text-anchor="middle" class="text">写入 loginUserInfo</text>
+    <text x="1375" y="620" text-anchor="middle" class="small">放开大于 50 的进度</text>
+
+    <rect x="1520" y="500" width="195" height="160" rx="12" fill="#fff" stroke="#d29b2e" stroke-width="2"/>
+    <text x="1617" y="533" text-anchor="middle" class="head">51%～60%</text>
+    <text x="1617" y="563" text-anchor="middle" class="text">游戏 Zip 编排</text>
+    <text x="1617" y="588" text-anchor="middle" class="text">51～55 下载</text>
+    <text x="1617" y="613" text-anchor="middle" class="text">56～60 解压</text>
+    <text x="1617" y="638" text-anchor="middle" class="small">60 调用 loadGame</text>
+  </g>
+
+  <g>
+    <rect x="65" y="815" width="250" height="205" rx="12" fill="#fff" stroke="#4d9b72" stroke-width="2"/>
+    <text x="190" y="850" text-anchor="middle" class="head">引擎已运行</text>
+    <text x="190" y="882" text-anchor="middle" class="text">BASE.J2N getEntryInfo</text>
+    <text x="190" y="908" text-anchor="middle" class="small">等待原生入口配置回包</text>
+    <text x="190" y="947" text-anchor="middle" class="text">不是 61% 才启动</text>
+
+    <rect x="360" y="815" width="330" height="205" rx="12" fill="#fff" stroke="#4d9b72" stroke-width="2"/>
+    <text x="525" y="850" text-anchor="middle" class="head">游戏早期加载（不直接推 UI）</text>
+    <text x="525" y="882" text-anchor="middle" class="text">entryInfo：给出 index 路径/CDN</text>
+    <text x="525" y="908" text-anchor="middle" class="text">getIndexInfo：缓存/下载/读取/解析</text>
+    <text x="525" y="934" text-anchor="middle" class="text">index 决定 ccb/patch 与资源版本</text>
+    <text x="525" y="960" text-anchor="middle" class="text">fetchBaseScripts / fetchRes / boot</text>
+    <text x="525" y="990" text-anchor="middle" class="small">与原生热更、RN 登录并行</text>
+
+    <rect x="735" y="815" width="300" height="205" rx="12" fill="#fff" stroke="#4d9b72" stroke-width="2"/>
+    <text x="885" y="850" text-anchor="middle" class="head">doJsReady 原生握手门槛</text>
+    <text x="885" y="882" text-anchor="middle" class="text">游戏 JS 基础启动完成后发 J2N</text>
+    <text x="885" y="908" text-anchor="middle" class="text">原生回设备/能力/initParams/bootResult</text>
+    <text x="885" y="934" text-anchor="middle" class="text">N2J 回包后游戏进入项目 Loader</text>
+    <text x="885" y="974" text-anchor="middle" class="small">不是引擎刚启动，也不是游戏加载完成</text>
+
+    <rect x="1080" y="815" width="400" height="205" rx="12" fill="#fff" stroke="#4d9b72" stroke-width="2"/>
+    <text x="1280" y="850" text-anchor="middle" class="head">61%～99% 游戏 Loader 动态任务</text>
+    <text x="1280" y="882" text-anchor="middle" class="text">project：项目脚本与入口初始化</text>
+    <text x="1280" y="908" text-anchor="middle" class="text">bundle：业务 Bundle / 资源分包加载</text>
+    <text x="1280" y="934" text-anchor="middle" class="text">initSdk：游戏侧 SDK / 能力初始化</text>
+    <text x="1280" y="960" text-anchor="middle" class="text">其他 Loader 任务按 cur / total 计数</text>
+    <text x="1280" y="990" text-anchor="middle" class="small">不存在固定“70%=某模块”的代码映射</text>
+
+    <rect x="1525" y="815" width="190" height="205" rx="12" fill="#fff" stroke="#4d9b72" stroke-width="2"/>
+    <text x="1620" y="850" text-anchor="middle" class="head">启动结束</text>
+    <text x="1620" y="887" text-anchor="middle" class="text">closeLoading</text>
+    <text x="1620" y="919" text-anchor="middle" class="text">↓</text>
+    <text x="1620" y="951" text-anchor="middle" class="text">hideLoadingView</text>
+    <text x="1620" y="987" text-anchor="middle" class="small">不保证显示独立 100%</text>
+  </g>
+
+  <path class="arrow" d="M315 258 H360"/><path class="arrow" d="M610 258 H655"/><path class="arrow" d="M935 258 H980"/>
+  <path class="dash" d="M315 885 C335 885 335 330 360 300"/>
+  <path class="dash" d="M610 310 C620 650 675 780 735 875"/>
+  <path class="dash" d="M690 915 C820 770 860 470 980 590"/>
+  <path class="arrow" d="M1230 580 H1275"/><path class="arrow" d="M1475 580 H1520"/>
+  <path class="dash" d="M1617 660 C1570 740 1480 770 1435 815"/>
+  <path class="arrow" d="M1035 915 H1080"/><path class="arrow" d="M1480 915 H1525"/>
+  <path class="dash" d="M1280 815 C1320 690 1410 390 1495 330"/>
+  <path class="dash" d="M1495 330 C1540 460 1580 690 1620 815"/>
+
+  <g>
+    <rect x="210" y="1150" width="1380" height="155" rx="16" fill="#fff5f5" stroke="#c53030" stroke-width="3"/>
+    <text x="900" y="1185" text-anchor="middle" class="warn">60% 是 RN / 原生 / 游戏的交汇屏障（本次日志定位到 getIndexInfo）</text>
+    <text x="900" y="1220" text-anchor="middle" class="warnText">RN 上报 60 并交棒；原生桥接并保留最后显示值；游戏完成早期链路、首次 runProgress 后才跨到 61%+</text>
+    <text x="900" y="1250" text-anchor="middle" class="warnText">卡住日志：entryInfo ✓ → getIndexInfo 0/1 ✓ → indexInfo ✗ → ccb/patch、fetch、boot、doJsReady 均未进入</text>
+    <text x="900" y="1280" text-anchor="middle" class="warnText">最高概率：index CDN/弱网；同时需排查损坏缓存、文件读取和 JSON 解析。切网恢复与该判断一致，但当前日志不足以确定具体网络错误</text>
+  </g>
+  <path d="M525 1020 C525 1085 600 1110 690 1150" stroke="#c53030" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+</svg>
